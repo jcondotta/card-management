@@ -4,8 +4,8 @@ import com.blitzar.cards.TestMySQLContainer;
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.cards.config.TestTimeConfiguration;
 import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.domain.CardStatus;
 import com.blitzar.cards.repository.CardRepository;
+import com.blitzar.cards.service.AddCardDelegate;
 import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -13,7 +13,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,6 +25,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 import java.time.Clock;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,16 +74,18 @@ public class AddCardControllerTest extends TestMySQLContainer {
             .statusCode(HttpStatus.CREATED.value())
                 .extract().response();
 
-        Long cardId = response.body()
-                .as(Long.class);
-
+        Long cardId = response.body().as(Long.class);
         Card card = cardRepository.findById(cardId).orElseThrow();
 
         assertAll(
-                () -> assertThat(response.header("Location")).isEqualTo(RestAssured.baseURI + ":" + RestAssured.port + RestAssured.basePath + "/" + cardId),
+                () -> assertThat(card.getCardId()).isNotNull(),
                 () -> assertThat(card.getCardholderName()).isEqualTo(addCardRequest.getCardholderName()),
-                () -> assertThat(card.getCardStatus()).isEqualTo(CardStatus.BLOCKED),
-                () -> assertThat(card.getDailyWithdrawalLimit()).isEqualTo(addCardRequest.getDailyWithdrawalLimit())
+                () -> assertThat(card.getCardNumber()).isNotNull(),
+                () -> assertThat(card.getCardStatus()).isEqualTo(AddCardDelegate.DEFAULT_CARD_STATUS),
+                () -> assertThat(card.getDailyWithdrawalLimit()).isEqualTo(AddCardDelegate.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
+                () -> assertThat(card.getDailyPaymentLimit()).isEqualTo(AddCardDelegate.DEFAULT_DAILY_PAYMENT_LIMIT),
+                () -> assertThat(card.getExpirationDate()).isEqualTo(LocalDate.now(testFixedInstantUTC)
+                        .plus(AddCardDelegate.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS))
         );
     }
 
@@ -107,36 +110,6 @@ public class AddCardControllerTest extends TestMySQLContainer {
         var invalidCardholderName = RandomStringUtils.randomAlphabetic(22);
         var addCardRequest = new TestAddCardDelegate()
                 .setCardholderName(invalidCardholderName)
-                .buildCardRequest();
-
-        given()
-            .spec(requestSpecification)
-            .body(addCardRequest)
-        .when()
-            .post()
-        .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    public void givenNullDailyWithdrawalLimit_whenAddCard_thenReturnBadRequest(){
-        var addCardRequest = new TestAddCardDelegate()
-                .setDailyWithdrawalLimit(null)
-                .buildCardRequest();
-
-        given()
-            .spec(requestSpecification)
-            .body(addCardRequest)
-        .when()
-            .post()
-        .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    public void givenNegativeDailyWithdrawalLimit_whenAddCard_thenReturnBadRequest(){
-        var addCardRequest = new TestAddCardDelegate()
-                .setDailyWithdrawalLimit(NumberUtils.INTEGER_MINUS_ONE)
                 .buildCardRequest();
 
         given()
