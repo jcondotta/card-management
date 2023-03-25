@@ -1,18 +1,17 @@
 package com.blitzar.cards.web.controller.stubs;
 
 import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.domain.CardStatus;
 import com.blitzar.cards.service.AddCardDelegate;
 import com.blitzar.cards.web.controller.AddCardRequest;
+
+import java.util.UUID;
 
 public class TestAddCardDelegate implements AddCardDelegate {
 
     private String cardholderName;
-    private Integer dailyWithdrawalLimit;
 
     public TestAddCardDelegate() {
         this.cardholderName = "Jefferson Condotta";
-        this.dailyWithdrawalLimit = 1000;
     }
 
     @Override
@@ -25,16 +24,6 @@ public class TestAddCardDelegate implements AddCardDelegate {
         return this;
     }
 
-    @Override
-    public Integer getDailyWithdrawalLimit() {
-        return dailyWithdrawalLimit;
-    }
-
-    public TestAddCardDelegate setDailyWithdrawalLimit(Integer dailyWithdrawalLimit) {
-        this.dailyWithdrawalLimit = dailyWithdrawalLimit;
-        return this;
-    }
-
     public AddCardRequest buildCardRequest(){
         return new AddCardRequest(this);
     }
@@ -43,8 +32,10 @@ public class TestAddCardDelegate implements AddCardDelegate {
         Card card = new Card();
         card.setCardId(10L);
         card.setCardholderName(cardholderName);
-        card.setCardStatus(CardStatus.BLOCKED);
-        card.setDailyWithdrawalLimit(dailyWithdrawalLimit);
+        card.setCardNumber(UUID.randomUUID().toString());
+        card.setCardStatus(DEFAULT_CARD_STATUS);
+        card.setDailyWithdrawalLimit(DEFAULT_DAILY_WITHDRAWAL_LIMIT);
+        card.setDailyPaymentLimit(DEFAULT_DAILY_PAYMENT_LIMIT);
 
         return card;
     }
