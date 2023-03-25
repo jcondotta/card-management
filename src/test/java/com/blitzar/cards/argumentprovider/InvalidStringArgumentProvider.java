@@ -27,18 +27,5 @@ public class InvalidStringArgumentProvider implements ArgumentsProvider {
                 Arguments.of(horizontalTabDisplayArgument, "\t"),
                 Arguments.of(nullDisplayArgument, null)
         );
-
-
-
-//        Stream<Arguments> argumentStream1 = Stream.of(StringUtils.EMPTY, StringUtils.SPACE, null)
-//                .map(invalidStringValue -> Arguments.of(Named.of(escapeJava("2"), invalidStringValue)));
-//
-//        Stream<Arguments> argumentStream2 = Stream.of(StringUtils.LF, "\t")
-//                .map(invalidStringValue -> Arguments.of(Named.of(escapeJava("Hello \"World"), invalidStringValue)));
-//
-//        return Stream.concat(argumentStream1, argumentStream2);
     }
-
-
-
 }
