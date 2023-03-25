@@ -13,8 +13,8 @@ public class TestMySQLContainer {
     static {
         MY_SQL_CONTAINER = (MySQLContainer) new MySQLContainer("mysql:8.0")
                 .withDatabaseName("integration-test-db")
-                .withLabel("mysql-testcontainer-app", "cards");
-//                .withReuse(true);
+                .withLabel("mysql-testcontainer-app", "cards")
+                .withReuse(true);
 
         MY_SQL_CONTAINER.start();
     }

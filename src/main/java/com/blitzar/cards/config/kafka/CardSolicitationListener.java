@@ -16,17 +16,13 @@ public class CardSolicitationListener {
         this.addCardService = addCardService;
     }
 
-    @KafkaListener(topics = "card-solicitation", groupId = "123")
+//    @KafkaListener(topics = "card-solicitation")
     public void listener(String cardholderName){
         System.out.println("Card Solicitation for: " + cardholderName);
         AddCardDelegate delegate = new AddCardDelegate() {
             @Override
             public String getCardholderName() {
                 return cardholderName;
-            }
-            @Override
-            public Integer getDailyWithdrawalLimit() {
-                return 2;
             }
         };
 
