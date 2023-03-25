@@ -1,0 +1,24 @@
+POST http://localhost:8080/api/v1/cards
+Content-Type: application/json
+
+{
+  "cardholderName": "Jefferson Condotta",
+  "dailyWithdrawalLimit": 24500
+}
+
+###
+PATCH http://localhost:8080/api/v1/cards/1/activation
+Content-Type: application/json
+
+###
+PATCH http://localhost:8080/api/v1/cards/1/cancellation
+Content-Type: application/json
+
+###
+GET http://localhost:8080/api/v1/cards/1
+Content-Type: application/json
+Accept-Language: pt-BR
+
+###
+GET http://localhost:8080/api/v1/cards
+Content-Type: application/json
