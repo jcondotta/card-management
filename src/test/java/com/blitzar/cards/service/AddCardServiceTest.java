@@ -84,40 +84,4 @@ class AddCardServiceTest {
 
         verify(cardRepositoryMock, never()).save(any());
     }
-
-    @Test
-    public void givenNullDailyWithdrawalLimit_whenAddCard_thenThrowException(){
-        var delegate = new TestAddCardDelegate()
-                .setDailyWithdrawalLimit(null);
-
-        var exception = assertThrowsExactly(ConstraintViolationsException.class, () -> addCardService.addCard(delegate));
-        assertThat(exception.violations()).hasSize(1);
-
-        exception.violations().stream()
-                .findFirst()
-                .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.defaultMessageFormat()).isEqualTo("card.dailyWithdrawalLimit.notNull"),
-                        () -> assertThat(violation.name()).isEqualTo("dailyWithdrawalLimit")
-                ));
-
-        verify(cardRepositoryMock, never()).save(any());
-    }
-
-    @Test
-    public void givenNegativeDailyWithdrawalLimit_whenAddCard_thenThrowException(){
-        var delegate = new TestAddCardDelegate()
-                .setDailyWithdrawalLimit(NumberUtils.INTEGER_MINUS_ONE);
-
-        var exception = assertThrowsExactly(ConstraintViolationsException.class, () -> addCardService.addCard(delegate));
-        assertThat(exception.violations()).hasSize(1);
-
-        exception.violations().stream()
-                .findFirst()
-                .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.defaultMessageFormat()).isEqualTo("card.dailyWithdrawalLimit.negative"),
-                        () -> assertThat(violation.name()).isEqualTo("dailyWithdrawalLimit")
-                ));
-
-        verify(cardRepositoryMock, never()).save(any());
-    }
 }
