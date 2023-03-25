@@ -41,9 +41,13 @@ class GetCardServiceTest {
         CardDTO cardDTO = getCardService.byId(anyLong());
 
         assertAll(
+                () -> assertThat(cardDTO.cardId()).isEqualTo(card.getCardId()),
                 () -> assertThat(cardDTO.cardholderName()).isEqualTo(card.getCardholderName()),
+                () -> assertThat(cardDTO.cardNumber()).isEqualTo(card.getCardNumber()),
                 () -> assertThat(cardDTO.cardStatus()).isEqualTo(card.getCardStatus()),
-                () -> assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit())
+                () -> assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit()),
+                () -> assertThat(cardDTO.dailyPaymentLimit()).isEqualTo(card.getDailyPaymentLimit()),
+                () -> assertThat(cardDTO.expirationDate()).isEqualTo(card.getExpirationDate())
         );
     }
 

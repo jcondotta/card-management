@@ -3,7 +3,9 @@ package com.blitzar.cards.web.dto;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.domain.CardStatus;
 
-public record CardDTO(long cardId, String cardholderName, String cardNumber, CardStatus cardStatus, int dailyWithdrawalLimit, int dailyPaymentLimit) {
+import java.time.LocalDate;
+
+public record CardDTO(long cardId, String cardholderName, String cardNumber, CardStatus cardStatus, int dailyWithdrawalLimit, int dailyPaymentLimit, LocalDate expirationDate) {
 
     public CardDTO(Card card) {
         this(
@@ -12,7 +14,8 @@ public record CardDTO(long cardId, String cardholderName, String cardNumber, Car
                 card.getCardNumber(),
                 card.getCardStatus(),
                 card.getDailyWithdrawalLimit(),
-                card.getDailyPaymentLimit()
+                card.getDailyPaymentLimit(),
+                card.getExpirationDate()
         );
     }
 }
