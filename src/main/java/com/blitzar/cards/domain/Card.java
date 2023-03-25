@@ -2,6 +2,8 @@ package com.blitzar.cards.domain;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 public class Card {
 
@@ -13,24 +15,21 @@ public class Card {
     @Column(name = "cardholder_name", nullable = false, length = 21)
     private String cardholderName;
 
+    @Column(name = "card_number", nullable = false)
+    private String cardNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "card_status", nullable = false)
     private CardStatus cardStatus;
 
-//    @Column(name = "card_number")
-//    private String cardNumber;
-//
-//    @Column(name = "expiration_date")
-//    private LocalDate expirationDate;
-//
-//    @Column(name = "security_code")
-//    private char[] securityCode;
+    @Column(name = "expiration_date", nullable = false)
+    private LocalDate expirationDate;
 
-//    @Column(name = "daily_payment_limit")
-//    private int dailyPaymentLimit;
-//
     @Column(name = "daily_withdrawal_limit", nullable = false)
     private int dailyWithdrawalLimit;
+
+    @Column(name = "daily_payment_limit", nullable = false)
+    private int dailyPaymentLimit;
 
     public Long getCardId() {
         return cardId;
@@ -56,6 +55,22 @@ public class Card {
         this.cardStatus = cardStatus;
     }
 
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
     public int getDailyWithdrawalLimit() {
         return dailyWithdrawalLimit;
     }
@@ -64,27 +79,11 @@ public class Card {
         this.dailyWithdrawalLimit = dailyWithdrawalLimit;
     }
 
-    //    public String getCardNumber() {
-//        return cardNumber;
-//    }
-//
-//    public void setCardNumber(String cardNumber) {
-//        this.cardNumber = cardNumber;
-//    }
-//
-//    public LocalDate getExpirationDate() {
-//        return expirationDate;
-//    }
-//
-//    public void setExpirationDate(LocalDate expirationDate) {
-//        this.expirationDate = expirationDate;
-//    }
-//
-//    public char[] getSecurityCode() {
-//        return securityCode;
-//    }
-//
-//    public void setSecurityCode(char[] securityCode) {
-//        this.securityCode = securityCode;
-//    }
+    public int getDailyPaymentLimit() {
+        return dailyPaymentLimit;
+    }
+
+    public void setDailyPaymentLimit(int dailyPaymentLimit) {
+        this.dailyPaymentLimit = dailyPaymentLimit;
+    }
 }
