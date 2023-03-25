@@ -35,15 +35,13 @@ class CancelCardServiceTest {
         cancelCardService = new CancelCardService(cardRepositoryMock);
     }
 
-    @ParameterizedTest
-    @EnumSource(CardStatus.class)
-    public void givenExistentCardId_whenCancelCard_thenUpdateCardStatus(CardStatus cardStatus){
+    @Test
+    public void givenExistentCardId_whenCancelCard_thenUpdateCardStatus(){
         Card cardMock = mock(Card.class);
 
         when(cardRepositoryMock.findById(anyLong())).thenReturn(Optional.of(cardMock));
 
         cancelCardService.cancelCard(anyLong());
-
         verify(cardRepositoryMock).save(any());
     }
 
