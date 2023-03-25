@@ -75,7 +75,8 @@ public class AddCardControllerTest extends TestMySQLContainer {
                 .extract().response();
 
         Long cardId = response.body().as(Long.class);
-        Card card = cardRepository.findById(cardId).orElseThrow();
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow();
 
         assertAll(
                 () -> assertThat(card.getCardId()).isNotNull(),
