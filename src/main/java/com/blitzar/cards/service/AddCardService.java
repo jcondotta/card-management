@@ -4,7 +4,6 @@ import am.ik.yavi.builder.ValidatorBuilder;
 import am.ik.yavi.core.ConstraintViolationsException;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.repository.CardRepository;
-import com.blitzar.cards.service.validator.AddCardValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
