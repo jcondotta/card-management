@@ -3,15 +3,16 @@ package com.blitzar.cards.service;
 import am.ik.yavi.builder.ValidatorBuilder;
 import am.ik.yavi.core.ConstraintViolationsException;
 import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.domain.CardStatus;
 import com.blitzar.cards.repository.CardRepository;
+import com.blitzar.cards.service.validator.AddCardValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.stream.StreamSupport;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Service
 public class AddCardService {
@@ -31,10 +32,6 @@ public class AddCardService {
                         c -> c.notNull().message("card.cardholderName.notBlank")
                                 .predicate(s -> StringUtils.isNotBlank(s), "card.cardholderName.notBlank", "card.cardholderName.notBlank")
                                 .lessThanOrEqual(21).message("card.cardholderName.length.limit"))
-
-                .constraint(AddCardDelegate::getDailyWithdrawalLimit, "dailyWithdrawalLimit",
-                        c -> c.notNull().message("card.dailyWithdrawalLimit.notNull")
-                                .greaterThanOrEqual(0).message("card.dailyWithdrawalLimit.negative"))
                 .build()
                 .applicative()
                 .validate(delegate)
@@ -42,11 +39,12 @@ public class AddCardService {
 
         var card = new Card();
         card.setCardholderName(delegate.getCardholderName());
-        card.setCardStatus(CardStatus.BLOCKED);
-        card.setDailyWithdrawalLimit(delegate.getDailyWithdrawalLimit());
-//        card.setCardNumber(UUID.randomUUID().toString());
-//        card.setExpirationDate(LocalDate.now().plus(4, ChronoUnit.YEARS));
-//        card.setSecurityCode(RandomStringUtils.randomNumeric(3).toCharArray());
+        card.setCardNumber(UUID.randomUUID().toString());
+        card.setCardStatus(AddCardDelegate.DEFAULT_CARD_STATUS);
+        card.setDailyWithdrawalLimit(AddCardDelegate.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
+        card.setDailyPaymentLimit(AddCardDelegate.DEFAULT_DAILY_PAYMENT_LIMIT);
+        card.setExpirationDate(LocalDate.now(currentInstant)
+                .plus(AddCardDelegate.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS));
 
         return repository.save(card);
     }
