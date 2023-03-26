@@ -1,6 +1,6 @@
 package com.blitzar.cards.web.controller;
 
-import com.blitzar.cards.service.AddCardDelegate;
+import com.blitzar.cards.service.delegate.AddCardDelegate;
 
 public class AddCardRequest implements AddCardDelegate {
 

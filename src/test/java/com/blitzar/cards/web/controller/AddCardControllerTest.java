@@ -5,7 +5,7 @@ import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.cards.config.TestTimeConfiguration;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.repository.CardRepository;
-import com.blitzar.cards.service.AddCardDelegate;
+import com.blitzar.cards.service.delegate.AddCardDelegate;
 import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -36,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = TestTimeConfiguration.class)
 public class AddCardControllerTest extends TestMySQLContainer {
 
-    private String currentTestName;
     private RequestSpecification requestSpecification;
 
     @Autowired
@@ -54,8 +53,7 @@ public class AddCardControllerTest extends TestMySQLContainer {
     }
 
     @BeforeEach
-    public void beforeEach(TestInfo testInfo) {
-        this.currentTestName = testInfo.getTestMethod().orElseThrow().getName();
+    public void beforeEach() {
         this.requestSpecification = new RequestSpecBuilder()
                 .build()
                 .contentType(ContentType.JSON);

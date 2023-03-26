@@ -1,4 +1,4 @@
-package com.blitzar.cards.service;
+package com.blitzar.cards.service.delegate;
 
 import com.blitzar.cards.domain.CardStatus;
 

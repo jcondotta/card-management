@@ -10,10 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.MalformedURLException;
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/cards")
@@ -30,18 +26,6 @@ public class AddCardController {
     public ResponseEntity<?> addCard(@RequestBody AddCardRequest request){
         Card card = addCardService.addCard(request);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(card.getCardId())
-                .toUri();
-
-        String url = null;
-        try {
-            url = location.toURL().toString();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).header("Location", url).body(card.getCardId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(card.getCardId());
     }
 }
