@@ -8,8 +8,8 @@ spring:
     password: sB6mbtzNHmCQI4eN4yLo
     driverClassName: com.mysql.cj.jdbc.Driver
 
-#  kafka:
-#    bootstrap-servers: localhost:9092
+  kafka:
+    bootstrap-servers: localhost:9093, localhost:9094, localhost:9095
 
   flyway:
     enabled: true
