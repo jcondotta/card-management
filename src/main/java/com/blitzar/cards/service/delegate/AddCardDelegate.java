@@ -10,4 +10,8 @@ public interface AddCardDelegate {
     int DEFAULT_YEAR_PERIOD_EXPIRATION_DATE = 5;
 
     String getCardholderName();
+
+    default Long getCustomerAccountId(){
+        return 1L;
+    }
 }

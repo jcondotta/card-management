@@ -2,6 +2,8 @@ package com.blitzar.cards.web.controller;
 
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.service.AddCardService;
+import com.blitzar.cards.web.controller.request.AddCardRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +25,7 @@ public class AddCardController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addCard(@RequestBody AddCardRequest request){
+    public ResponseEntity<?> addCard(@Valid @RequestBody AddCardRequest request){
         Card card = addCardService.addCard(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(card.getCardId());

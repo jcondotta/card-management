@@ -1,6 +1,6 @@
 package com.blitzar.cards.web.controller;
 
-import com.blitzar.cards.TestMySQLContainer;
+import com.blitzar.cards.TestContainer;
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.cards.config.TestTimeConfiguration;
 import com.blitzar.cards.domain.Card;
@@ -13,7 +13,10 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -34,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = TestTimeConfiguration.class)
-public class AddCardControllerTest extends TestMySQLContainer {
+public class AddCardControllerTest extends TestContainer {
 
     private RequestSpecification requestSpecification;
 
@@ -55,8 +58,8 @@ public class AddCardControllerTest extends TestMySQLContainer {
     @BeforeEach
     public void beforeEach() {
         this.requestSpecification = new RequestSpecBuilder()
-                .build()
-                .contentType(ContentType.JSON);
+                .setContentType(ContentType.JSON)
+                .build();
     }
 
     @Test
