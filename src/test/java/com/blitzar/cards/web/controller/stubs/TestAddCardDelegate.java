@@ -2,7 +2,7 @@ package com.blitzar.cards.web.controller.stubs;
 
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.service.delegate.AddCardDelegate;
-import com.blitzar.cards.web.controller.AddCardRequest;
+import com.blitzar.cards.web.controller.request.AddCardRequest;
 
 import java.util.UUID;
 
