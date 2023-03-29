@@ -16,3 +16,4 @@ spring.jpa.open-in-view is enabled by default. Therefore, database queries may b
 9 - Cancel Card - Patch
 10 - Change daily withdrawal limit
 11 - Integration test esta subindo muitos contextos
+12 - Unify message errors across api requests, events, and delegates
