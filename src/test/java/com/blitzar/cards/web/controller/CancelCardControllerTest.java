@@ -1,6 +1,6 @@
 package com.blitzar.cards.web.controller;
 
-import com.blitzar.cards.TestMySQLContainer;
+import com.blitzar.cards.TestContainer;
 import com.blitzar.cards.config.TestTimeConfiguration;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.domain.CardStatus;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = TestTimeConfiguration.class)
-class CancelCardControllerTest extends TestMySQLContainer {
+class CancelCardControllerTest extends TestContainer {
 
     private RequestSpecification requestSpecification;
 

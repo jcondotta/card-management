@@ -1,6 +1,6 @@
 package com.blitzar.cards.web.controller;
 
-import com.blitzar.cards.TestMySQLContainer;
+import com.blitzar.cards.TestContainer;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.service.AddCardService;
 import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class GetCardControllerTest extends TestMySQLContainer {
+public class GetCardControllerTest extends TestContainer {
 
     private String currentTestName;
     private RequestSpecification requestSpecification;
@@ -62,8 +62,13 @@ public class GetCardControllerTest extends TestMySQLContainer {
                     .as(CardDTO.class);
 
         assertAll(
+                () -> assertThat(cardDTO.cardId()).isEqualTo(card.getCardId()),
                 () -> assertThat(cardDTO.cardholderName()).isEqualTo(card.getCardholderName()),
-                () -> assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit())
+                () -> assertThat(cardDTO.cardNumber()).isEqualTo(card.getCardNumber()),
+                () -> assertThat(cardDTO.cardStatus()).isEqualTo(card.getCardStatus()),
+                () -> assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit()),
+                () -> assertThat(cardDTO.dailyPaymentLimit()).isEqualTo(card.getDailyPaymentLimit()),
+                () -> assertThat(cardDTO.expirationDate()).isEqualTo(card.getExpirationDate())
         );
     }
 
