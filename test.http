@@ -1,18 +1,10 @@
-### Card application via synchrounous API
-POST http://localhost:8080/api/v1/cards
-Content-Type: application/json
-
-{
-  "cardholderName": "Jefferson Feitosa"
-}
-
 ### Card application via kafka
 POST http://localhost:8080/api/v1/cards/application
 Content-Type: application/json
 Accept-Language: pt-BR
 
 {
-  "cardholderName": "Jefferson Condotta"
+  "cardholderName": "Jefferson Condotta234234234234234234234234234"
 }
 
 ### Activate a blocked card
@@ -24,7 +16,7 @@ PATCH http://localhost:8080/api/v1/cards/3/cancellation
 Content-Type: application/json
 
 ### Fetch a specific card
-GET http://localhost:8080/api/v1/cards/1
+GET http://localhost:8080/api/v1/cards/122
 Content-Type: application/json
 Accept-Language: pt-BR
 
