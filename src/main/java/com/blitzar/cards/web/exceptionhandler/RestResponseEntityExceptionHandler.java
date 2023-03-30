@@ -1,81 +1,57 @@
 package com.blitzar.cards.web.exceptionhandler;
 
-import am.ik.yavi.core.ConstraintViolation;
-import am.ik.yavi.core.ConstraintViolationsException;
 import com.blitzar.cards.exception.ResourceNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
+import org.springframework.http.*;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private HttpServletRequest request;
     private MessageSource messageSource;
 
     @Autowired
-    public RestResponseEntityExceptionHandler(HttpServletRequest request, @Qualifier("exceptionMessageSource") MessageSource messageSource) {
+    public RestResponseEntityExceptionHandler(@Qualifier("exceptionMessageSource") MessageSource messageSource) {
+        super.setMessageSource(messageSource);
         this.messageSource = messageSource;
-        this.request = request;
+    }
+
+    private record FieldError(String field, String message){}
+
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(status);
+        problemDetail.setType(URI.create(StringUtils.EMPTY));
+
+        List<FieldError> fieldErrors = ex.getFieldErrors().stream()
+                .map(error -> new FieldError(error.getField(), messageSource.getMessage(error.getDefaultMessage(), null, request.getLocale())))
+                .collect(Collectors.toList());
+
+        problemDetail.setProperty("errors", fieldErrors);
+
+        return ResponseEntity.status(status).body(problemDetail);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = { ResourceNotFoundException.class })
-    protected ErrorResponse handleConflict(ResourceNotFoundException e, HttpServletRequest request) {
-        String errorMessage= null;
-        if(LocaleContextHolder.getLocale() != null){
-            errorMessage = messageSource.getMessage(e.getMessage(), new Object[]{e.getRejectedIdentifier()}, "Something", LocaleContextHolder.getLocale());
-        }
-        else{
-            errorMessage = messageSource.getMessage(e.getMessage(), new Object[]{e.getRejectedIdentifier()}, "Something", Locale.getDefault());
-        }
+    protected ResponseEntity<Object> handleConflict(ResourceNotFoundException e, WebRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setType(URI.create(StringUtils.EMPTY));
+        problemDetail.setDetail(messageSource.getMessage(e.getMessage(), new Object[]{ e.getRejectedIdentifier() }, request.getLocale()));
 
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, errorMessage);
-        problemDetail.setProperty("timestamp", LocalDateTime.now(Clock.systemUTC()).truncatedTo(ChronoUnit.SECONDS));
-        problemDetail.setType(URI.create(request.getRequestURL().toString()));
-
-        return ErrorResponse.builder(e, HttpStatus.NOT_FOUND, e.getMessage())
-                .title("Bookmark not found")
-                .type(URI.create("https://api.bookmarks.com/errors/not-found"))
-                .property("errorCategory", "Generic")
-                .property("timestamp", Instant.now())
-                .build();
-
-//        return ResponseEntity.status(404).body(problemDetail);
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = { ConstraintViolationsException.class })
-    protected ResponseEntity<?> handleConflict(ConstraintViolationsException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-
-        Map<String, String> errorMessages = new HashMap<>();
-        for (ConstraintViolation violation : exception.violations()) {
-            String exceptionMessage = messageSource.getMessage(violation.message(), new Object[]{}, Locale.getDefault());
-            errorMessages.put("message", String.join(": ", violation.name(), exceptionMessage));
-        }
-
-        problemDetail.setProperty("errors", errorMessages);
-
-        return ResponseEntity.badRequest().body(problemDetail);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
 }
