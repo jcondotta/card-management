@@ -6,3 +6,5 @@
 12 - Unify message errors across api requests, events, and delegates
 13 - retorno para status 201
 14 - retorno para status 202
+15 - Evitar pull the image a cada push to main branch
+16 - evitar que o contexto seja reiniciado a cada classe
