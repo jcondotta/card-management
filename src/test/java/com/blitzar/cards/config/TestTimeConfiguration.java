@@ -15,7 +15,7 @@ public class TestTimeConfiguration {
     @Bean("testFixedInstantUTC")
     public Clock testFixedInstantUTC(){
         return Clock.fixed(
-                Instant.parse("2018-06-24T12:45:01Z"),
+                Instant.parse("2021-06-24T12:45:18Z"),
                 ZoneOffset.UTC);
     }
 }
