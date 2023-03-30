@@ -14,7 +14,7 @@ public class MessageSourceConfiguration {
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasenames("i18n/messages/messages");
-        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setDefaultEncoding("ISO-8859-1");
         messageSource.setDefaultLocale(Locale.UK);
         return messageSource;
     }
@@ -23,7 +23,7 @@ public class MessageSourceConfiguration {
     public MessageSource exceptionMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasenames("i18n/exceptions/exceptions");
-        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setDefaultEncoding("ISO-8859-1");
         messageSource.setDefaultLocale(Locale.UK);
         return messageSource;
     }
