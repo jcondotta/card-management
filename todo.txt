@@ -1,19 +1,8 @@
-1 - Organizar inheritance das classes Card
-1.1 - Flyway - ok
-1.2 - Init schema .sql para prod db and test container db's - pl
-
-2 - Criar standard para mensagens de erro
 3 - Criar validacao para todos os campos
-4 - Mover Beans de CardApplication para uma factory exclusiva
-5 - Colocar o banco de dados em docker compose - ok
-
-spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-
-
 6 - Logging
-7 - Activate Card - Patch
 8 - Lock Card - Patch
-9 - Cancel Card - Patch
 10 - Change daily withdrawal limit
 11 - Integration test esta subindo muitos contextos
 12 - Unify message errors across api requests, events, and delegates
+13 - retorno para status 201
+14 - retorno para status 202
