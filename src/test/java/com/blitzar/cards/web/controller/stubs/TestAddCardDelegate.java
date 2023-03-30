@@ -2,7 +2,6 @@ package com.blitzar.cards.web.controller.stubs;
 
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.service.delegate.AddCardDelegate;
-import com.blitzar.cards.web.controller.request.AddCardRequest;
 
 import java.util.UUID;
 
@@ -15,17 +14,13 @@ public class TestAddCardDelegate implements AddCardDelegate {
     }
 
     @Override
-    public String getCardholderName() {
+    public String cardholderName() {
         return cardholderName;
     }
 
     public TestAddCardDelegate setCardholderName(String cardholderName) {
         this.cardholderName = cardholderName;
         return this;
-    }
-
-    public AddCardRequest buildCardRequest(){
-        return new AddCardRequest(this);
     }
 
     public Card buildCard(){
