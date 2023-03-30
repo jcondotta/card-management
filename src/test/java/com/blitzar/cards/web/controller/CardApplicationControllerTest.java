@@ -88,7 +88,7 @@ public class CardApplicationControllerTest implements KafkaTestContainer, MySQLT
 
     @Test
     public void givenValidRequest_whenCardApplication_thenReturnCreated(){
-        var cardApplicationEvent = new CardApplicationEvent("Jefferson Condotta");
+        var cardApplicationEvent = new CardApplicationEvent("Jefferson William");
 
         given()
             .spec(requestSpecification)
