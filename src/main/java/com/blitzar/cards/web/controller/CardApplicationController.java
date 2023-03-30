@@ -1,11 +1,9 @@
 package com.blitzar.cards.web.controller;
 
-import com.blitzar.cards.service.CardApplicationEventHandler;
+import com.blitzar.cards.service.CardApplicationEventProducer;
 import com.blitzar.cards.events.CardApplicationEvent;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -14,17 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/cards")
 public class CardApplicationController {
 
-    private CardApplicationEventHandler cardApplicationEventHandler;
+    private CardApplicationEventProducer cardApplicationEventProducer;
     private MessageSource messageSource;
 
     @Autowired
-    public CardApplicationController(CardApplicationEventHandler cardApplicationEventHandler, MessageSource messageSource) {
-        this.cardApplicationEventHandler = cardApplicationEventHandler;
+    public CardApplicationController(CardApplicationEventProducer cardApplicationEventProducer, MessageSource messageSource) {
+        this.cardApplicationEventProducer = cardApplicationEventProducer;
         this.messageSource = messageSource;
     }
 
@@ -34,7 +33,11 @@ public class CardApplicationController {
         if(locale != null){
             LocaleContextHolder.setLocale(locale);
         }
-        cardApplicationEventHandler.handle(cardApplicationEvent);
-        return ResponseEntity.accepted().body(messageSource.getMessage("card.application.accepted", new Object[]{}, LocaleContextHolder.getLocale()));
+        cardApplicationEventProducer.handle(cardApplicationEvent);
+        var cardApplicationConfirmationDTO = new CardApplicationConfirmationDTO(UUID.randomUUID().toString(), messageSource.getMessage("card.application.accepted", null, LocaleContextHolder.getLocale()));
+
+        return ResponseEntity.accepted().body(cardApplicationConfirmationDTO);
     }
+
+    private record CardApplicationConfirmationDTO(String cardApplicationReference, String message){}
 }

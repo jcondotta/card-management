@@ -1,7 +1,9 @@
 package com.blitzar.cards.web.controller;
 
-import com.blitzar.cards.TestContainer;
+import com.blitzar.cards.KafkaTestContainer;
+import com.blitzar.cards.MySQLTestContainer;
 import com.blitzar.cards.domain.Card;
+import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.service.AddCardService;
 import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
 import com.blitzar.cards.web.dto.CardDTO;
@@ -10,27 +12,36 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+
+import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class GetCardControllerTest extends TestContainer {
+public class GetCardControllerTest implements MySQLTestContainer, KafkaTestContainer {
 
-    private String currentTestName;
-    private RequestSpecification requestSpecification;
+    @Autowired
+    @Qualifier("exceptionMessageSource")
+    private MessageSource exceptionMessageSource;
 
     @Autowired
     private AddCardService addCardService;
+
+    private RequestSpecification requestSpecification;
 
     @BeforeAll
     public static void beforeAll(@LocalServerPort int serverHttpPort){
@@ -40,17 +51,16 @@ public class GetCardControllerTest extends TestContainer {
     }
 
     @BeforeEach
-    public void beforeEach(TestInfo testInfo) {
-        this.currentTestName = testInfo.getTestMethod().orElseThrow().getName();
+    public void beforeEach() {
         this.requestSpecification = new RequestSpecBuilder()
-                .build()
-                .contentType(ContentType.JSON);
+                .setContentType(ContentType.JSON)
+                .build();
     }
 
     @Test
     public void givenExistentCardId_whenGetCard_thenReturnOk(){
-        var addCardDelegate = new TestAddCardDelegate().buildCardRequest();
-        Card card = addCardService.addCard(addCardDelegate);
+        var cardApplicationEvent = new CardApplicationEvent("Jefferson Condotta");
+        Card card = addCardService.addCard(cardApplicationEvent);
 
         CardDTO cardDTO = given()
             .spec(requestSpecification)
@@ -79,6 +89,10 @@ public class GetCardControllerTest extends TestContainer {
         .when()
             .get("/{id}", NumberUtils.INTEGER_MINUS_ONE)
         .then()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+            .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("title", equalTo(HttpStatus.NOT_FOUND.getReasonPhrase()))
+                .body("status", equalTo(HttpStatus.NOT_FOUND.value()))
+                .body("instance", equalTo(RestAssured.basePath + "/%s".formatted(NumberUtils.INTEGER_MINUS_ONE)))
+                .body("detail", equalTo(exceptionMessageSource.getMessage("card.notFound", new Object[] { org.testcontainers.shaded.org.apache.commons.lang3.math.NumberUtils.INTEGER_MINUS_ONE }, Locale.getDefault())));;
     }
 }

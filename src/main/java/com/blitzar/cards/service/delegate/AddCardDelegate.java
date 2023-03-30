@@ -9,9 +9,9 @@ public interface AddCardDelegate {
     int DEFAULT_DAILY_PAYMENT_LIMIT = 2500;
     int DEFAULT_YEAR_PERIOD_EXPIRATION_DATE = 5;
 
-    String getCardholderName();
+    String cardholderName();
 
-    default Long getCustomerAccountId(){
+    default Long customerAccountId(){
         return 1L;
     }
 }

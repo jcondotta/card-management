@@ -1,11 +1,12 @@
 package com.blitzar.cards.service;
 
-import am.ik.yavi.core.ConstraintViolationsException;
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
+import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -22,45 +23,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AddCardServiceTest {
 
-    private String currentTestName;
     private AddCardService addCardService;
 
     @Mock
     private CardRepository cardRepositoryMock;
 
     @BeforeEach
-    public void beforeEach(TestInfo testInfo){
-        currentTestName = testInfo.getTestMethod().orElseThrow().getName();
-        addCardService = new AddCardService(cardRepositoryMock, Clock.system(ZoneOffset.UTC));
+    public void beforeEach(){
+        addCardService = new AddCardService(cardRepositoryMock, Clock.system(ZoneOffset.UTC), Validation.buildDefaultValidatorFactory().getValidator());
     }
 
     @Test
     public void givenValidRequest_whenAddCard_thenSaveCard(){
-        var delegate = new TestAddCardDelegate();
+        var cardApplicationEvent = new CardApplicationEvent("Jefferson Condotta");
 
-        addCardService.addCard(delegate);
+        addCardService.addCard(cardApplicationEvent);
         verify(cardRepositoryMock).save(any());
     }
 
     @ParameterizedTest
     @ArgumentsSource(InvalidStringArgumentProvider.class)
     public void givenInvalidCardholderName_whenAddCard_thenThrowException(String invalidCardholderName){
-        var delegate = new TestAddCardDelegate()
-                .setCardholderName(invalidCardholderName);
+        var cardApplicationEvent = new CardApplicationEvent(invalidCardholderName);
 
-        var exception = assertThrowsExactly(ConstraintViolationsException.class, () -> addCardService.addCard(delegate));
-        assertThat(exception.violations()).hasSize(1);
+        var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(cardApplicationEvent));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
 
-        exception.violations().stream()
+        exception.getConstraintViolations().stream()
                 .findFirst()
                 .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.defaultMessageFormat()).isEqualTo("card.cardholderName.notBlank"),
-                        () -> assertThat(violation.name()).isEqualTo("cardholderName")
+                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.notBlank"),
+                        () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName")
                 ));
 
         verify(cardRepositoryMock, never()).save(any());
@@ -69,17 +68,16 @@ class AddCardServiceTest {
     @Test
     public void givenCardholderNameLongerThan21Characters_whenAddCard_thenThrowException(){
         var invalidCardholderName = RandomStringUtils.randomAlphabetic(22);
-        var delegate = new TestAddCardDelegate()
-                .setCardholderName(invalidCardholderName);
+        var cardApplicationEvent = new CardApplicationEvent(invalidCardholderName);
 
-        var exception = assertThrowsExactly(ConstraintViolationsException.class, () -> addCardService.addCard(delegate));
-        assertThat(exception.violations()).hasSize(1);
+        var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(cardApplicationEvent));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
 
-        exception.violations().stream()
+        exception.getConstraintViolations().stream()
                 .findFirst()
                 .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.defaultMessageFormat()).isEqualTo("card.cardholderName.length.limit"),
-                        () -> assertThat(violation.name()).isEqualTo("cardholderName")
+                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.length.limit"),
+                        () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName")
                 ));
 
         verify(cardRepositoryMock, never()).save(any());

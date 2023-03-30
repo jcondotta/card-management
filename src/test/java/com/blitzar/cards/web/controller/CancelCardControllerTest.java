@@ -1,42 +1,49 @@
 package com.blitzar.cards.web.controller;
 
-import com.blitzar.cards.TestContainer;
-import com.blitzar.cards.config.TestTimeConfiguration;
+import com.blitzar.cards.MySQLTestContainer;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.domain.CardStatus;
+import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.service.AddCardService;
 import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.testcontainers.shaded.org.apache.commons.lang3.math.NumberUtils;
+
+import java.util.Locale;
 
 import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.hamcrest.Matchers.equalTo;
 
-@TestInstance(Lifecycle.PER_CLASS)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = TestTimeConfiguration.class)
-class CancelCardControllerTest extends TestContainer {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+class CancelCardControllerTest implements MySQLTestContainer {
 
-    private RequestSpecification requestSpecification;
+    @Autowired
+    @Qualifier("exceptionMessageSource")
+    private MessageSource exceptionMessageSource;
 
     @Autowired
     private AddCardService addCardService;
 
     @Autowired
     private CardRepository cardRepository;
+
+    private RequestSpecification requestSpecification;
 
     @BeforeAll
     public static void beforeAll(@LocalServerPort int serverHttpPort){
@@ -54,8 +61,8 @@ class CancelCardControllerTest extends TestContainer {
 
     @Test
     public void givenExistentCardId_whenCancelCard_thenReturnOk(){
-        var addCardDelegate = new TestAddCardDelegate().buildCardRequest();
-        Card card = addCardService.addCard(addCardDelegate);
+        var cardApplicationEvent = new CardApplicationEvent("Jefferson Condotta");
+        Card card = addCardService.addCard(cardApplicationEvent);
 
         given()
             .spec(requestSpecification)
@@ -76,6 +83,10 @@ class CancelCardControllerTest extends TestContainer {
         .when()
             .patch("/{id}/cancellation", NumberUtils.INTEGER_MINUS_ONE)
         .then()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+            .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("title", equalTo(HttpStatus.NOT_FOUND.getReasonPhrase()))
+                .body("status", equalTo(HttpStatus.NOT_FOUND.value()))
+                .body("instance", equalTo(RestAssured.basePath + "/%s/cancellation".formatted(NumberUtils.INTEGER_MINUS_ONE)))
+                .body("detail", equalTo(exceptionMessageSource.getMessage("card.notFound", new Object[] { NumberUtils.INTEGER_MINUS_ONE }, Locale.getDefault())));;
     }
 }

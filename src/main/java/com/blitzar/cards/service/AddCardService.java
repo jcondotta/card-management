@@ -1,17 +1,18 @@
 package com.blitzar.cards.service;
 
-import am.ik.yavi.builder.ValidatorBuilder;
-import am.ik.yavi.core.ConstraintViolationsException;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.service.delegate.AddCardDelegate;
-import org.apache.commons.lang3.StringUtils;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -19,26 +20,23 @@ public class AddCardService {
 
     private final CardRepository repository;
     private final Clock currentInstant;
+    private final Validator validator;
 
     @Autowired
-    public AddCardService(CardRepository repository, Clock currentInstant) {
+    public AddCardService(CardRepository repository, Clock currentInstant, Validator validator) {
         this.repository = repository;
         this.currentInstant = currentInstant;
+        this.validator = validator;
     }
 
     public Card addCard(AddCardDelegate delegate){
-        ValidatorBuilder.<AddCardDelegate>of()
-                .constraint(AddCardDelegate::getCardholderName, "cardholderName",
-                        c -> c.notNull().message("card.cardholderName.notBlank")
-                                .predicate(s -> StringUtils.isNotBlank(s), "card.cardholderName.notBlank", "card.cardholderName.notBlank")
-                                .lessThanOrEqual(21).message("card.cardholderName.length.limit"))
-                .build()
-                .applicative()
-                .validate(delegate)
-                .orElseThrow(violations -> new ConstraintViolationsException(violations));
+        var constraintViolations = validator.validate(delegate);
+        if(!constraintViolations.isEmpty()){
+            throw new ConstraintViolationException(constraintViolations);
+        }
 
         var card = new Card();
-        card.setCardholderName(delegate.getCardholderName());
+        card.setCardholderName(delegate.cardholderName());
         card.setCardNumber(UUID.randomUUID().toString());
         card.setCardStatus(AddCardDelegate.DEFAULT_CARD_STATUS);
         card.setDailyWithdrawalLimit(AddCardDelegate.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
