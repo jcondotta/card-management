@@ -29,9 +29,9 @@ jobs:
         distribution: 'corretto'
         cache: maven
     - name: Build / Unit tests
-      run: mvn test
+      run: mvn -B test
     - name: Integration tests
-      run: mvn failsafe:integration-test
+      run: mvn -B failsafe:integration-test
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     # - name: Update dependency graph
