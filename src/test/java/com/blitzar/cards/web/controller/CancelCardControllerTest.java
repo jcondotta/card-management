@@ -61,7 +61,7 @@ class CancelCardControllerTest implements MySQLTestContainer {
 
     @Test
     public void givenExistentCardId_whenCancelCard_thenReturnOk(){
-        var cardApplicationEvent = new CardApplicationEvent("Jefferson Condotta");
+        var cardApplicationEvent = new CardApplicationEvent("Mateo Condotta");
         Card card = addCardService.addCard(cardApplicationEvent);
 
         given()
@@ -73,7 +73,7 @@ class CancelCardControllerTest implements MySQLTestContainer {
 
         cardRepository.findById(card.getCardId())
                 .ifPresentOrElse(patchedCard -> assertThat(patchedCard.getCardStatus()).isEqualTo(CardStatus.CANCELLED),
-                        () -> fail("No card has been found with id: %s", card.getCardId()));
+                        () -> fail("No card has been found with id: %s".formatted(card.getCardId())));
     }
 
     @Test

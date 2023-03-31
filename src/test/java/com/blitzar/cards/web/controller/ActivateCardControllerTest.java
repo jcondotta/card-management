@@ -63,7 +63,7 @@ class ActivateCardControllerTest implements MySQLTestContainer {
 
     @Test
     public void givenExistentCardId_whenActivateCard_thenReturnOk(){
-        var cardApplicationEvent = new CardApplicationEvent("Jefferson Condotta");
+        var cardApplicationEvent = new CardApplicationEvent("Raffaella Condotta");
         Card card = addCardService.addCard(cardApplicationEvent);
 
         given()
@@ -75,7 +75,7 @@ class ActivateCardControllerTest implements MySQLTestContainer {
 
         cardRepository.findById(card.getCardId())
                 .ifPresentOrElse(patchedCard -> assertThat(patchedCard.getCardStatus()).isEqualTo(CardStatus.ACTIVE),
-                        () -> fail("No card has been found with id: %s",  card.getCardId()));
+                        () -> fail("No card has been found with id: %s".formatted(card.getCardId())));
     }
 
     @Test
