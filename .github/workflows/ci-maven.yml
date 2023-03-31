@@ -31,6 +31,14 @@ jobs:
           cache: maven
       - name: Build and Run Tests
         run: mvn test --batch-mode --fail-at-end
+      - name: Report
+        uses: dorny/test-reporter@v1.5.0
+        if: always()
+        with:
+          name: Maven Tests
+          path: "**/surefire-reports/TEST-*.xml"
+          reporter: java-junit
+
       - name: Publish Test Report
         if: success() || failure()
         uses: scacap/action-surefire-report@v1
