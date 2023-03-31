@@ -3,13 +3,11 @@ package com.blitzar.cards.service;
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.repository.CardRepository;
-import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -76,7 +74,7 @@ class AddCardServiceTest {
         exception.getConstraintViolations().stream()
                 .findFirst()
                 .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.length.limit"),
+                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.length.limit2"),
                         () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName")
                 ));
 
