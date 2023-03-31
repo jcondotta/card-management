@@ -10,7 +10,7 @@ name: Cards Management - Nightly CI pipeline
 
 on:
   schedule:
-    - cron: '36, 40 * * * *'
+    - cron: '36,40 * * * *'
 
 jobs:
   build:
