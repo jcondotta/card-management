@@ -39,7 +39,7 @@ jobs:
       - name: Publish Test Report
         uses: scacap/action-surefire-report@bc71e9d0f892826ec4cd14db336bd115ddfcb1c8
         with:
-          report_paths: '**/test-results/**/TEST-*.xml'
+          report_paths: '**/surefire-reports/**/TEST-*.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
