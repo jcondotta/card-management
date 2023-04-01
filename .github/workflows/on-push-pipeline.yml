@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Cards Management - CI pipeline
+name: On Push - CI pipeline
 
 on:
   push:
