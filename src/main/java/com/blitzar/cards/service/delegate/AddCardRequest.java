@@ -1,9 +1,7 @@
-package com.blitzar.cards.events;
+package com.blitzar.cards.service.delegate;
 
-import com.blitzar.cards.service.delegate.AddCardDelegate;
 import com.blitzar.cards.validation.annotation.CardholderName;
 
-public record CardApplicationEvent(
+public record AddCardRequest(
         @CardholderName String cardholderName) implements AddCardDelegate {
 }
-

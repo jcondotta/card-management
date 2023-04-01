@@ -6,6 +6,7 @@ import com.blitzar.cards.domain.CardStatus;
 import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.service.AddCardService;
+import com.blitzar.cards.service.delegate.AddCardRequest;
 import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -63,8 +64,8 @@ class ActivateCardControllerTest implements MySQLTestContainer {
 
     @Test
     public void givenExistentCardId_whenActivateCard_thenReturnOk(){
-        var cardApplicationEvent = new CardApplicationEvent("Raffaella Condotta");
-        Card card = addCardService.addCard(cardApplicationEvent);
+        var addCardRequest = new AddCardRequest("Raffaella Condotta");
+        Card card = addCardService.addCard(addCardRequest);
 
         given()
             .spec(requestSpecification)
@@ -75,7 +76,7 @@ class ActivateCardControllerTest implements MySQLTestContainer {
 
         cardRepository.findById(card.getCardId())
                 .ifPresentOrElse(patchedCard -> assertThat(patchedCard.getCardStatus()).isEqualTo(CardStatus.ACTIVE),
-                        () -> fail("No card has been found with id: %s".formatted(card.getCardId())));
+                        () -> fail(exceptionMessageSource.getMessage("card.notFound", new Object[]{ card.getCardId() }, Locale.getDefault())));
     }
 
     @Test

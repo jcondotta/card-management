@@ -3,9 +3,8 @@ package com.blitzar.cards.web.controller;
 import com.blitzar.cards.KafkaTestContainer;
 import com.blitzar.cards.MySQLTestContainer;
 import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.service.AddCardService;
-import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
+import com.blitzar.cards.service.delegate.AddCardRequest;
 import com.blitzar.cards.web.dto.CardDTO;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -15,7 +14,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,8 +57,8 @@ public class GetCardControllerTest implements MySQLTestContainer, KafkaTestConta
 
     @Test
     public void givenExistentCardId_whenGetCard_thenReturnOk(){
-        var cardApplicationEvent = new CardApplicationEvent("Jefferson Condotta");
-        Card card = addCardService.addCard(cardApplicationEvent);
+        var addCardRequest = new AddCardRequest("Jefferson Condotta");
+        Card card = addCardService.addCard(addCardRequest);
 
         CardDTO cardDTO = given()
             .spec(requestSpecification)

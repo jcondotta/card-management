@@ -2,7 +2,9 @@ package com.blitzar.cards.service.delegate;
 
 import com.blitzar.cards.domain.CardStatus;
 
-public interface AddCardDelegate {
+import java.io.Serializable;
+
+public interface AddCardDelegate extends Serializable {
 
     CardStatus DEFAULT_CARD_STATUS = CardStatus.BLOCKED;
     int DEFAULT_DAILY_WITHDRAWAL_LIMIT = 1000;
@@ -10,8 +12,4 @@ public interface AddCardDelegate {
     int DEFAULT_YEAR_PERIOD_EXPIRATION_DATE = 5;
 
     String cardholderName();
-
-    default Long customerAccountId(){
-        return 1L;
-    }
 }

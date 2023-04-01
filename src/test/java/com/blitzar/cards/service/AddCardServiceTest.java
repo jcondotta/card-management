@@ -3,6 +3,7 @@ package com.blitzar.cards.service;
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.repository.CardRepository;
+import com.blitzar.cards.service.delegate.AddCardRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -39,18 +40,18 @@ class AddCardServiceTest {
 
     @Test
     public void givenValidRequest_whenAddCard_thenSaveCard(){
-        var cardApplicationEvent = new CardApplicationEvent("Jefferson Condotta");
+        var addCardRequest = new AddCardRequest("Jefferson Condotta");
 
-        addCardService.addCard(cardApplicationEvent);
+        addCardService.addCard(addCardRequest);
         verify(cardRepositoryMock).save(any());
     }
 
     @ParameterizedTest
     @ArgumentsSource(InvalidStringArgumentProvider.class)
     public void givenInvalidCardholderName_whenAddCard_thenThrowException(String invalidCardholderName){
-        var cardApplicationEvent = new CardApplicationEvent(invalidCardholderName);
+        var addCardRequest = new AddCardRequest(invalidCardholderName);
 
-        var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(cardApplicationEvent));
+        var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);
 
         exception.getConstraintViolations().stream()
@@ -66,9 +67,9 @@ class AddCardServiceTest {
     @Test
     public void givenCardholderNameLongerThan21Characters_whenAddCard_thenThrowException(){
         var invalidCardholderName = RandomStringUtils.randomAlphabetic(22);
-        var cardApplicationEvent = new CardApplicationEvent(invalidCardholderName);
+        var addCardRequest = new AddCardRequest(invalidCardholderName);
 
-        var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(cardApplicationEvent));
+        var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);
 
         exception.getConstraintViolations().stream()
