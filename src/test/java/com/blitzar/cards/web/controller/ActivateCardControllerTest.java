@@ -3,16 +3,13 @@ package com.blitzar.cards.web.controller;
 import com.blitzar.cards.MySQLTestContainer;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.domain.CardStatus;
-import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.service.AddCardService;
 import com.blitzar.cards.service.delegate.AddCardRequest;
-import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +28,6 @@ import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ActivateCardControllerTest implements MySQLTestContainer {

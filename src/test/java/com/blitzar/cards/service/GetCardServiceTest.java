@@ -1,8 +1,9 @@
 package com.blitzar.cards.service;
 
+import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.exception.ResourceNotFoundException;
 import com.blitzar.cards.repository.CardRepository;
-import com.blitzar.cards.web.controller.stubs.TestAddCardDelegate;
+import com.blitzar.cards.service.delegate.AddCardRequest;
 import com.blitzar.cards.web.dto.CardDTO;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -34,7 +38,14 @@ class GetCardServiceTest {
 
     @Test
     public void givenExistentCardId_whenGetCard_thenReturnCard(){
-        var card = new TestAddCardDelegate().buildCard();
+        var card = new Card();
+        card.setCardId(10L);
+        card.setCardholderName("Jefferson Condotta");
+        card.setCardNumber(UUID.randomUUID().toString());
+        card.setCardStatus(AddCardRequest.DEFAULT_CARD_STATUS);
+        card.setDailyWithdrawalLimit(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
+        card.setDailyPaymentLimit(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT);
+        card.setExpirationDate(LocalDate.of(2001, Month.APRIL, 20));
 
         when(cardRepositoryMock.findById(anyLong())).thenReturn(Optional.of(card));
 

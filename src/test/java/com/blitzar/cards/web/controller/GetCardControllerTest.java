@@ -91,6 +91,6 @@ public class GetCardControllerTest implements MySQLTestContainer, KafkaTestConta
                 .body("title", equalTo(HttpStatus.NOT_FOUND.getReasonPhrase()))
                 .body("status", equalTo(HttpStatus.NOT_FOUND.value()))
                 .body("instance", equalTo(RestAssured.basePath + "/%s".formatted(NumberUtils.INTEGER_MINUS_ONE)))
-                .body("detail", equalTo(exceptionMessageSource.getMessage("card.notFound", new Object[] { org.testcontainers.shaded.org.apache.commons.lang3.math.NumberUtils.INTEGER_MINUS_ONE }, Locale.getDefault())));;
+                .body("detail", equalTo(exceptionMessageSource.getMessage("card.notFound", new Object[] { NumberUtils.INTEGER_MINUS_ONE }, Locale.getDefault())));
     }
 }

@@ -54,12 +54,14 @@ class AddCardServiceTest {
         var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);
 
-        exception.getConstraintViolations().stream()
+        var violation = exception.getConstraintViolations().stream()
                 .findFirst()
-                .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.notBlank"),
-                        () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName")
-                ));
+                .orElseThrow();
+
+        assertAll(
+                () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.notBlank"),
+                () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName")
+        );
 
         verify(cardRepositoryMock, never()).save(any());
     }
