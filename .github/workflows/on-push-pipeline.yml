@@ -31,7 +31,7 @@ jobs:
           cache: maven
 
       - name: Build and Run Tests
-        run: mvn test --batch-mode --fail-at-end
+        run: mvn verify --batch-mode --fail-at-end
 
       - name: Test Report
         if: success() || failure()
