@@ -56,7 +56,7 @@ class AddCardServiceTest {
         exception.getConstraintViolations().stream()
                 .findFirst()
                 .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.notBlank3"),
+                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.notBlank"),
                         () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName")
                 ));
 
@@ -74,7 +74,7 @@ class AddCardServiceTest {
         exception.getConstraintViolations().stream()
                 .findFirst()
                 .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.length.limit2"),
+                        () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.length.limit"),
                         () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName")
                 ));
 
