@@ -36,12 +36,10 @@ jobs:
         if: success() || failure()
         uses: scacap/action-surefire-report@v1
 
-      - name: Publish Test Report
+      - name: Publish Test Report 2
         uses: scacap/action-surefire-report@bc71e9d0f892826ec4cd14db336bd115ddfcb1c8
         with:
           report_paths: '**/surefire-reports/**/TEST-*.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
 
 
 
