@@ -40,7 +40,7 @@ class GetCardServiceTest {
     public void givenExistentCardId_whenGetCard_thenReturnCard(){
         var card = new Card();
         card.setCardId(10L);
-        card.setCardholderName("Jefferson Condotta");
+        card.setCardholderName("Jefferson Test User");
         card.setCardNumber(UUID.randomUUID().toString());
         card.setCardStatus(AddCardRequest.DEFAULT_CARD_STATUS);
         card.setDailyWithdrawalLimit(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
