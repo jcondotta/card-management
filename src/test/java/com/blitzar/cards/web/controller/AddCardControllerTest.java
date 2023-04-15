@@ -64,7 +64,7 @@ public class AddCardControllerTest implements MySQLTestContainer {
 
     @Test
     public void givenValidRequest_whenAddCard_thenReturnCreated(){
-        var addCardRequest = new AddCardRequest("Jefferson Condotta");
+        var addCardRequest = new AddCardRequest("Jefferson Feitosa");
 
         Response response = given()
             .spec(requestSpecification)
