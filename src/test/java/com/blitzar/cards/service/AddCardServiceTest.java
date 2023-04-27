@@ -1,7 +1,6 @@
 package com.blitzar.cards.service;
 
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
-import com.blitzar.cards.events.CardApplicationEvent;
 import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.service.delegate.AddCardRequest;
 import jakarta.validation.ConstraintViolationException;
