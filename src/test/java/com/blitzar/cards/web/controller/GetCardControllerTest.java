@@ -1,6 +1,5 @@
 package com.blitzar.cards.web.controller;
 
-import com.blitzar.cards.KafkaTestContainer;
 import com.blitzar.cards.MySQLTestContainer;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.service.AddCardService;
@@ -30,7 +29,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class GetCardControllerTest implements MySQLTestContainer, KafkaTestContainer {
+public class GetCardControllerTest implements MySQLTestContainer {
 
     @Autowired
     @Qualifier("exceptionMessageSource")
