@@ -28,7 +28,7 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.hasSize;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -76,9 +76,7 @@ class ActivateCardControllerTest implements LocalStackMySQLTestContainer {
 
         cardRepository.findById(card.getCardId())
                 .ifPresentOrElse(patchedCard -> assertThat(patchedCard.getCardStatus()).isEqualTo(CardStatus.ACTIVE),
-                        () -> fail("fail"));
-
-//        exceptionMessageSource.getMessage("card.notFound", new Object[]{ card.getCardId() }, Locale.getDefault()))
+                        () -> fail(exceptionMessageSource.getMessage("card.notFound", Locale.getDefault()).orElseThrow()));
     }
 
     @Test
@@ -91,6 +89,6 @@ class ActivateCardControllerTest implements LocalStackMySQLTestContainer {
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", Matchers.equalTo("must not be blank"));
+                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("card.notFound", Locale.getDefault()).orElseThrow()));
     }
 }

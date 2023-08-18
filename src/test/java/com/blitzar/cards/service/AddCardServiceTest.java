@@ -2,6 +2,7 @@ package com.blitzar.cards.service;
 
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.cards.repository.CardRepository;
+import com.blitzar.cards.service.events.CardApplicationEvent;
 import com.blitzar.cards.service.request.AddCardRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,6 +83,24 @@ class AddCardServiceTest {
                 .ifPresent(violation -> assertAll(
                         () -> assertThat(violation.getMessage()).isEqualTo("card.cardholderName.length.limit"),
                         () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName")
+                ));
+
+        verify(cardRepositoryMock, never()).save(any());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(InvalidStringArgumentProvider.class)
+    public void givenInvalidIBAN_whenRegisterCardApplication_thenThrowException(String invalidIBAN){
+        var cardApplicationEvent = new CardApplicationEvent(cardholderName, invalidIBAN);
+
+        var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(cardApplicationEvent));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
+
+        exception.getConstraintViolations().stream()
+                .findFirst()
+                .ifPresent(violation -> assertAll(
+                        () -> assertThat(violation.getMessage()).isEqualTo("card.iban.notBlank"),
+                        () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("iban")
                 ));
 
         verify(cardRepositoryMock, never()).save(any());

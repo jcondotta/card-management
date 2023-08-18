@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public class CardDTO {
 
-    private long cardId;
+    private Long cardId;
     private String cardholderName;
     private String cardNumber;
     private String accountHolderIban;
@@ -16,7 +16,9 @@ public class CardDTO {
     private int dailyPaymentLimit;
     private LocalDate expirationDate;
 
-    public CardDTO(long cardId,
+    public CardDTO() {}
+
+    public CardDTO(Long cardId,
                    String cardholderName,
                    String cardNumber,
                    String accountHolderIban,

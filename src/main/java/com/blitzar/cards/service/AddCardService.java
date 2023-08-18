@@ -6,6 +6,7 @@ import com.blitzar.cards.service.request.AddCardRequest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.time.Clock;
@@ -14,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Singleton
+@Transactional
 public class AddCardService {
 
     private final CardRepository repository;

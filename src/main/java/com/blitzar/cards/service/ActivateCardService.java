@@ -6,7 +6,10 @@ import com.blitzar.cards.repository.CardRepository;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import javax.transaction.Transactional;
+
 @Singleton
+@Transactional
 public class ActivateCardService {
 
     private final CardRepository repository;
