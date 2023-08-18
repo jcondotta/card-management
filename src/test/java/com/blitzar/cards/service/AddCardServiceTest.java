@@ -99,7 +99,7 @@ class AddCardServiceTest {
         exception.getConstraintViolations().stream()
                 .findFirst()
                 .ifPresent(violation -> assertAll(
-                        () -> assertThat(violation.getMessage()).isEqualTo("card.iban.notBlank"),
+                        () -> assertThat(violation.getMessage()).isEqualTo("card.accountHolderIBAN.notBlank"),
                         () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("iban")
                 ));
 
