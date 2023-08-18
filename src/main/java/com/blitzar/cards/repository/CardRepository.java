@@ -1,14 +1,13 @@
 package com.blitzar.cards.repository;
 
 import com.blitzar.cards.domain.Card;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @Repository
-public interface CardRepository extends CrudRepository<Card, Long> {
+public interface CardRepository extends JpaRepository<Card, Long> {
 
     Collection<Card> findByCardholderName(String cardholderName);
 }

@@ -3,15 +3,15 @@ package com.blitzar.cards.service;
 import com.blitzar.cards.domain.CardStatus;
 import com.blitzar.cards.exception.ResourceNotFoundException;
 import com.blitzar.cards.repository.CardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
-@Service
+@Singleton
 public class ActivateCardService {
 
     private final CardRepository repository;
 
-    @Autowired
+    @Inject
     public ActivateCardService(CardRepository repository) {
         this.repository = repository;
     }

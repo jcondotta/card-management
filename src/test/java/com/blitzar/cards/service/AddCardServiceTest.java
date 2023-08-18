@@ -2,9 +2,7 @@ package com.blitzar.cards.service;
 
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.cards.repository.CardRepository;
-import com.blitzar.cards.service.delegate.AddCardRequest;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
+import com.blitzar.cards.service.request.AddCardRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +12,11 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
 import java.time.Clock;
 import java.time.ZoneOffset;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -32,6 +33,9 @@ class AddCardServiceTest {
     @Mock
     private CardRepository cardRepositoryMock;
 
+    private String cardholderName = "Jefferson Condotta";
+    private String accountHolderIban = UUID.randomUUID().toString();
+
     @BeforeEach
     public void beforeEach(){
         addCardService = new AddCardService(cardRepositoryMock, Clock.system(ZoneOffset.UTC), Validation.buildDefaultValidatorFactory().getValidator());
@@ -39,7 +43,7 @@ class AddCardServiceTest {
 
     @Test
     public void givenValidRequest_whenAddCard_thenSaveCard(){
-        var addCardRequest = new AddCardRequest("Jefferson Condotta");
+        var addCardRequest = new AddCardRequest(cardholderName, accountHolderIban);
 
         addCardService.addCard(addCardRequest);
         verify(cardRepositoryMock).save(any());
@@ -48,7 +52,7 @@ class AddCardServiceTest {
     @ParameterizedTest
     @ArgumentsSource(InvalidStringArgumentProvider.class)
     public void givenInvalidCardholderName_whenAddCard_thenThrowException(String invalidCardholderName){
-        var addCardRequest = new AddCardRequest(invalidCardholderName);
+        var addCardRequest = new AddCardRequest(invalidCardholderName, accountHolderIban);
 
         var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);
@@ -68,7 +72,7 @@ class AddCardServiceTest {
     @Test
     public void givenCardholderNameLongerThan21Characters_whenAddCard_thenThrowException(){
         var invalidCardholderName = RandomStringUtils.randomAlphabetic(22);
-        var addCardRequest = new AddCardRequest(invalidCardholderName);
+        var addCardRequest = new AddCardRequest(invalidCardholderName, accountHolderIban);
 
         var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);

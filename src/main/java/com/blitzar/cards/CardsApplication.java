@@ -1,14 +1,10 @@
 package com.blitzar.cards;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import io.micronaut.runtime.Micronaut;
 
-@SpringBootApplication
-@ConfigurationPropertiesScan
 public class CardsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CardsApplication.class, args);
+		Micronaut.run(CardsApplication.class, args);
 	}
 }

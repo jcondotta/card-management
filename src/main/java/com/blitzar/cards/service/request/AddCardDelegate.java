@@ -1,4 +1,4 @@
-package com.blitzar.cards.service.delegate;
+package com.blitzar.cards.service.request;
 
 import com.blitzar.cards.domain.CardStatus;
 
@@ -11,5 +11,4 @@ public interface AddCardDelegate extends Serializable {
     int DEFAULT_DAILY_PAYMENT_LIMIT = 2500;
     int DEFAULT_YEAR_PERIOD_EXPIRATION_DATE = 5;
 
-    String cardholderName();
 }

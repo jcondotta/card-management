@@ -4,17 +4,17 @@ import com.blitzar.cards.exception.ResourceNotFoundException;
 import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.web.dto.CardDTO;
 import com.blitzar.cards.web.dto.CardsDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import java.util.stream.StreamSupport;
 
-@Service
+@Singleton
 public class GetCardService {
 
     private CardRepository cardRepository;
 
-    @Autowired
+    @Inject
     public GetCardService(CardRepository cardRepository) {
         this.cardRepository = cardRepository;
     }

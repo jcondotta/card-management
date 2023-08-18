@@ -1,27 +1,27 @@
 package com.blitzar.cards.web.controller;
 
 import com.blitzar.cards.service.ActivateCardService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.validation.Validated;
+import jakarta.inject.Inject;
 
-@RestController
-@RequestMapping("/api/v1/cards")
+@Validated
+@Controller(CardAPIConstants.BASE_PATH_API_V1_MAPPING)
 public class ActivateCardController {
 
     private final ActivateCardService activateCardService;
 
-    @Autowired
+    @Inject
     public ActivateCardController(ActivateCardService activateCardService) {
         this.activateCardService = activateCardService;
     }
 
-    @PatchMapping(value = "/{id}/activation")
-    public ResponseEntity<?> addCard(@PathVariable("id") Long id){
+    @Patch(value = "/{id}/activation")
+    public HttpResponse<?> activateCard(@PathVariable("id") Long id){
         activateCardService.activateCard(id);
-        return ResponseEntity.noContent().build();
+        return HttpResponse.noContent();
     }
 }

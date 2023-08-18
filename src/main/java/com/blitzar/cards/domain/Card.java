@@ -1,7 +1,6 @@
 package com.blitzar.cards.domain;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -17,6 +16,9 @@ public class Card {
 
     @Column(name = "card_number", nullable = false)
     private String cardNumber;
+
+    @Column(name = "account_holder_iban", nullable = false)
+    private String accountHolderIban;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "card_status", nullable = false)
@@ -53,6 +55,14 @@ public class Card {
 
     public void setCardStatus(CardStatus cardStatus) {
         this.cardStatus = cardStatus;
+    }
+
+    public String getAccountHolderIban() {
+        return accountHolderIban;
+    }
+
+    public void setAccountHolderIban(String accountHolderIban) {
+        this.accountHolderIban = accountHolderIban;
     }
 
     public String getCardNumber() {

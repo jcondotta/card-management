@@ -1,48 +1,48 @@
-server:
-  port: 8082
-
-spring:
+micronaut:
   application:
-    name: card-management
+    name: cards
+  server:
+    port: 8088
 
-  datasource:
-    url: jdbc:mysql://localhost:23306/cards_db
-    username: admin
-    password: sB6mbtzNHmCQI4eN4yLo
-    driverClassName: com.mysql.cj.jdbc.Driver
+  jms:
+    sqs:
+      enabled: true
 
-  flyway:
-    enabled: true
-    url: ${spring.datasource.url}
-    user: ${spring.datasource.username}
-    password: ${spring.datasource.password}
-
-  jpa:
-    hibernate:
-      ddl-auto: none
-
-  kafka:
-    bootstrap-servers: localhost:9093
-    consumer:
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring:
-          json:
-            trusted:
-              packages: "*"
-
-  jackson:
-    mapper:
-      accept-case-insensitive-enums: true
-
-  level:
-    root: debug
-    sql: info
-    web: info
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  region: ${AWS_DEFAULT_REGION}
+  sqs:
+    endpoint: ${AWS_SQS_ENDPOINT}
 
 app:
-  kafka:
-    card-application-topic: card-application
-    card-application-group-id: card-application
+  aws:
+    sqs:
+      card-application-queue-name: card-application
+
+datasources:
+  default:
+    url: ${database.url}
+    username: ${database.username}
+    password: ${database.password}
+    driverClassName: ${database.driver:com.mysql.cj.jdbc.Driver}
+
+flyway:
+  datasources:
+    default:
+      enabled: true
+
+jpa:
+  default:
+    entity-scan:
+      packages: 'com.blitzar.cards.domain'
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+      show-sql: true
+
+jackson:
+  mapper:
+    accept-case-insensitive-enums: true
+    accept-single-value-as-array: true

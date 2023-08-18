@@ -2,31 +2,28 @@ package com.blitzar.cards.web.controller;
 
 import com.blitzar.cards.service.GetCardService;
 import com.blitzar.cards.web.dto.CardDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.validation.Validated;
+import jakarta.inject.Inject;
 
-import java.util.Locale;
-
-@RestController
-@RequestMapping("/api/v1/cards")
+@Validated
+@Controller(CardAPIConstants.BASE_PATH_API_V1_MAPPING)
 public class GetCardController {
 
     private final GetCardService getCardService;
 
-    @Autowired
+    @Inject
     public GetCardController(GetCardService getCardService) {
         this.getCardService = getCardService;
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> byId(@RequestHeader(name ="Accept-Language", required= false) Locale locale, @PathVariable("id") Long id){
-        if(locale != null){
-            LocaleContextHolder.setLocale(locale);
-        }
+    @Get(value = "/{id}", produces = MediaType.APPLICATION_JSON)
+    public HttpResponse<?> byId(@PathVariable("id") Long id){
         CardDTO cardDTO = getCardService.byId(id);
-        return ResponseEntity.ok().body(cardDTO);
+        return HttpResponse.ok().body(cardDTO);
     }
 }

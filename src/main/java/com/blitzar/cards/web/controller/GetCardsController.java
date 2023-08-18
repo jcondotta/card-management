@@ -2,27 +2,26 @@ package com.blitzar.cards.web.controller;
 
 import com.blitzar.cards.service.GetCardService;
 import com.blitzar.cards.web.dto.CardsDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.validation.Validated;
+import jakarta.inject.Inject;
 
-@RestController
-@RequestMapping("/api/v1/cards")
+@Validated
+@Controller(CardAPIConstants.BASE_PATH_API_V1_MAPPING)
 public class GetCardsController {
 
     private final GetCardService getCardService;
 
-    @Autowired
+    @Inject
     public GetCardsController(GetCardService getCardService) {
         this.getCardService = getCardService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CardsDTO> getGoals(){
-        return new ResponseEntity<>(getCardService.findAll(), HttpStatus.OK);
+    @Get(produces = MediaType.APPLICATION_JSON)
+    public HttpResponse<CardsDTO> getGoals(){
+        return HttpResponse.ok(getCardService.findAll());
     }
 }

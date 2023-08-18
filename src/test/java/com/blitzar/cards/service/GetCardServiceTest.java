@@ -3,7 +3,7 @@ package com.blitzar.cards.service;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.exception.ResourceNotFoundException;
 import com.blitzar.cards.repository.CardRepository;
-import com.blitzar.cards.service.delegate.AddCardRequest;
+import com.blitzar.cards.service.request.AddCardRequest;
 import com.blitzar.cards.web.dto.CardDTO;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +41,7 @@ class GetCardServiceTest {
         var card = new Card();
         card.setCardId(10L);
         card.setCardholderName("Jefferson Test User");
+        card.setAccountHolderIban(UUID.randomUUID().toString());
         card.setCardNumber(UUID.randomUUID().toString());
         card.setCardStatus(AddCardRequest.DEFAULT_CARD_STATUS);
         card.setDailyWithdrawalLimit(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
@@ -52,13 +53,13 @@ class GetCardServiceTest {
         CardDTO cardDTO = getCardService.byId(anyLong());
 
         assertAll(
-                () -> assertThat(cardDTO.cardId()).isEqualTo(card.getCardId()),
-                () -> assertThat(cardDTO.cardholderName()).isEqualTo(card.getCardholderName()),
-                () -> assertThat(cardDTO.cardNumber()).isEqualTo(card.getCardNumber()),
-                () -> assertThat(cardDTO.cardStatus()).isEqualTo(card.getCardStatus()),
-                () -> assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit()),
-                () -> assertThat(cardDTO.dailyPaymentLimit()).isEqualTo(card.getDailyPaymentLimit()),
-                () -> assertThat(cardDTO.expirationDate()).isEqualTo(card.getExpirationDate())
+                () -> assertThat(cardDTO.getCardId()).isEqualTo(card.getCardId()),
+                () -> assertThat(cardDTO.getCardholderName()).isEqualTo(card.getCardholderName()),
+                () -> assertThat(cardDTO.getCardNumber()).isEqualTo(card.getCardNumber()),
+                () -> assertThat(cardDTO.getCardStatus()).isEqualTo(card.getCardStatus()),
+                () -> assertThat(cardDTO.getDailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit()),
+                () -> assertThat(cardDTO.getDailyPaymentLimit()).isEqualTo(card.getDailyPaymentLimit()),
+                () -> assertThat(cardDTO.getExpirationDate()).isEqualTo(card.getExpirationDate())
         );
     }
 
