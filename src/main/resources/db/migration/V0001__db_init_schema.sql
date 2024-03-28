@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS card
 (
     card_id                 BIGINT NOT NULL auto_increment PRIMARY KEY,
+    bank_account_id         BIGINT NOT NULL,
     cardholder_name         VARCHAR(21) NOT NULL,
-    account_holder_iban     VARCHAR(40) NOT NULL,
     card_number             VARCHAR(40) NOT NULL,
     card_status             VARCHAR(15) NOT NULL,
     daily_withdrawal_limit  int NOT NULL,

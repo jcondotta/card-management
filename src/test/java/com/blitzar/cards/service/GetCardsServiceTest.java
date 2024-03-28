@@ -3,8 +3,9 @@ package com.blitzar.cards.service;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.exception.ResourceNotFoundException;
 import com.blitzar.cards.repository.CardRepository;
-import com.blitzar.cards.service.request.AddCardRequest;
 import com.blitzar.cards.service.dto.CardDTO;
+import com.blitzar.cards.service.dto.CardsDTO;
+import com.blitzar.cards.service.request.AddCardRequest;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GetCardServiceTest {
+class GetCardsServiceTest {
 
     private GetCardService getCardService;
 
@@ -52,32 +54,33 @@ class GetCardServiceTest {
         card.setDailyPaymentLimit(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT);
         card.setExpirationDate(LocalDate.of(2001, Month.APRIL, 20));
 
-        when(cardRepositoryMock.findById(anyLong())).thenReturn(Optional.of(card));
+        when(cardRepositoryMock.findByBankAccountId(anyLong()))
+                .thenReturn(Collections.singletonList(card));
 
-        CardDTO cardDTO = getCardService.findById(anyLong());
+        var cardsDTO = getCardService.findByBankAccountId(bankAccountId);
+        assertThat(cardsDTO.getCards().size()).isEqualTo(1);
 
-        assertAll(
-                () -> assertThat(cardDTO.getCardId()).isEqualTo(card.getCardId()),
-                () -> assertThat(cardDTO.getBankAccountId()).isEqualTo(card.getBankAccountId()),
-                () -> assertThat(cardDTO.getCardholderName()).isEqualTo(card.getCardholderName()),
-                () -> assertThat(cardDTO.getCardNumber()).isEqualTo(card.getCardNumber()),
-                () -> assertThat(cardDTO.getCardStatus()).isEqualTo(card.getCardStatus()),
-                () -> assertThat(cardDTO.getDailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit()),
-                () -> assertThat(cardDTO.getDailyPaymentLimit()).isEqualTo(card.getDailyPaymentLimit()),
-                () -> assertThat(cardDTO.getExpirationDate()).isEqualTo(card.getExpirationDate())
-        );
+        cardsDTO.getCards().stream()
+                .findFirst()
+                .ifPresent(cardDTO -> assertAll(
+                        () -> assertThat(cardDTO.getCardId()).isEqualTo(card.getCardId()),
+                        () -> assertThat(cardDTO.getBankAccountId()).isEqualTo(card.getBankAccountId()),
+                        () -> assertThat(cardDTO.getCardholderName()).isEqualTo(card.getCardholderName()),
+                        () -> assertThat(cardDTO.getCardNumber()).isEqualTo(card.getCardNumber()),
+                        () -> assertThat(cardDTO.getCardStatus()).isEqualTo(card.getCardStatus()),
+                        () -> assertThat(cardDTO.getDailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit()),
+                        () -> assertThat(cardDTO.getDailyPaymentLimit()).isEqualTo(card.getDailyPaymentLimit()),
+                        () -> assertThat(cardDTO.getExpirationDate()).isEqualTo(card.getExpirationDate())
+                ));
     }
 
     @Test
     public void givenNonExistentCardId_whenGetCard_thenThrowException(){
-        long nonExistentCardId = NumberUtils.INTEGER_MINUS_ONE.longValue();
-        when(cardRepositoryMock.findById(nonExistentCardId)).thenReturn(Optional.empty());
+        long nonExistentBankAccountId = NumberUtils.INTEGER_MINUS_ONE.longValue();
+        when(cardRepositoryMock.findByBankAccountId(anyLong()))
+                .thenReturn(Collections.EMPTY_LIST);
 
-        var exception = assertThrowsExactly(ResourceNotFoundException.class, () -> getCardService.findById(nonExistentCardId));
-
-        assertAll(
-            () -> assertThat(exception.getMessage()).isEqualTo("card.notFound"),
-            () -> assertThat(exception.getRejectedIdentifier()).isEqualTo(nonExistentCardId)
-        );
+        var cardsDTO = getCardService.findByBankAccountId(nonExistentBankAccountId);
+        assertThat(cardsDTO.getCards().size()).isEqualTo(0);
     }
 }

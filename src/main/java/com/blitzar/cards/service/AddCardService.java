@@ -5,6 +5,8 @@ import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.service.request.AddCardRequest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
@@ -18,6 +20,8 @@ import java.util.UUID;
 @Transactional
 public class AddCardService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AddCardService.class);
+
     private final CardRepository repository;
     private final Clock currentInstant;
     private final Validator validator;
@@ -30,14 +34,16 @@ public class AddCardService {
     }
 
     public Card addCard(AddCardRequest request){
+        logger.info("[BankAccountId={}, CardholderName={}] Attempting to add a new card", request.getBankAccountId(), request.getCardholderName());
+
         var constraintViolations = validator.validate(request);
         if(!constraintViolations.isEmpty()){
             throw new ConstraintViolationException(constraintViolations);
         }
 
         var card = new Card();
+        card.setBankAccountId(request.getBankAccountId());
         card.setCardholderName(request.getCardholderName());
-        card.setAccountHolderIban(request.getIban());
         card.setCardNumber(UUID.randomUUID().toString());
         card.setCardStatus(AddCardRequest.DEFAULT_CARD_STATUS);
         card.setDailyWithdrawalLimit(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
@@ -45,6 +51,9 @@ public class AddCardService {
         card.setExpirationDate(LocalDate.now(currentInstant)
                 .plus(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS));
 
-        return repository.save(card);
+        repository.save(card);
+        logger.info("[BankAccountId={}, CardholderName={}] Card saved to DB", request.getBankAccountId(), request.getCardholderName());
+
+        return card;
     }
 }

@@ -15,7 +15,6 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,15 +22,15 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -52,8 +51,8 @@ public class AddCardControllerTest implements LocalStackMySQLTestContainer {
 
     private RequestSpecification requestSpecification;
 
+    private Long bankAccountId = 998372L;
     private String cardholderName = "Jefferson Condotta";
-    private String accountHolderIban = UUID.randomUUID().toString();
 
     @BeforeAll
     public static void beforeAll(){
@@ -69,11 +68,11 @@ public class AddCardControllerTest implements LocalStackMySQLTestContainer {
 
     @Test
     public void givenValidRequest_whenAddCard_thenReturnCreated(){
-        var addCardRequest = new AddCardRequest(cardholderName, accountHolderIban);
+        var addCardRequest = new AddCardRequest(bankAccountId, cardholderName);
 
         Response response = given()
             .spec(requestSpecification)
-            .body(addCardRequest)
+                .body(addCardRequest)
         .when()
             .post()
         .then()
@@ -86,6 +85,7 @@ public class AddCardControllerTest implements LocalStackMySQLTestContainer {
 
         assertAll(
                 () -> assertThat(card.getCardId()).isNotNull(),
+                () -> assertThat(card.getBankAccountId()).isEqualTo(addCardRequest.getBankAccountId()),
                 () -> assertThat(card.getCardholderName()).isEqualTo(addCardRequest.getCardholderName()),
                 () -> assertThat(card.getCardNumber()).isNotNull(),
                 () -> assertThat(card.getCardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
@@ -96,32 +96,67 @@ public class AddCardControllerTest implements LocalStackMySQLTestContainer {
         );
     }
 
-    @ParameterizedTest
-    @ArgumentsSource(InvalidStringArgumentProvider.class)
-    public void givenInvalidCardholderName_whenAddCard_thenReturnBadRequest(String invalidCardholderName){
-        var addCardRequest = new AddCardRequest(invalidCardholderName, accountHolderIban);
+    @Test
+    public void givenNullBankAccountId_whenAddCard_thenBadRequest(){
+        var addCardRequest = new AddCardRequest(null, cardholderName);
 
         given()
             .spec(requestSpecification)
-            .body(addCardRequest)
+                .body(addCardRequest)
         .when()
             .post()
         .then()
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
-            .body("errors", hasSize(1))
-            .body("errors[0].message", equalTo(exceptionMessageSource.
-                    getMessage("card.cardholderName.notBlank", Locale.getDefault()).orElseThrow()));;
+                .body("errors", hasSize(1))
+                .body("errors[0].message", equalTo(exceptionMessageSource.
+                        getMessage("card.bankAccountId.notNull", Locale.getDefault()).orElseThrow()));
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {Long.MIN_VALUE, -1, 0})
+    public void givenNegativeOrZeroBankAccountId_whenAddCard_thenBadRequest(Long invalidBankAccountId){
+        var addCardRequest = new AddCardRequest(invalidBankAccountId, cardholderName);
+
+        given()
+            .spec(requestSpecification)
+                .body(addCardRequest)
+        .when()
+            .post()
+        .then()
+            .statusCode(HttpStatus.BAD_REQUEST.getCode())
+            .rootPath("_embedded")
+                .body("errors", hasSize(1))
+                .body("errors[0].message", equalTo(exceptionMessageSource.
+                        getMessage("card.bankAccountId.positive", Locale.getDefault()).orElseThrow()));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(InvalidStringArgumentProvider.class)
+    public void givenInvalidCardholderName_whenAddCard_thenReturnBadRequest(String invalidCardholderName){
+        var addCardRequest = new AddCardRequest(bankAccountId, invalidCardholderName);
+
+        given()
+            .spec(requestSpecification)
+                .body(addCardRequest)
+        .when()
+            .post()
+        .then()
+            .statusCode(HttpStatus.BAD_REQUEST.getCode())
+            .rootPath("_embedded")
+                .body("errors", hasSize(1))
+                .body("errors[0].message", equalTo(exceptionMessageSource.
+                        getMessage("card.cardholderName.notBlank", Locale.getDefault()).orElseThrow()));
     }
 
     @Test
     public void givenCardholderNameLongerThan21Characters_whenAddCard_thenReturnBadRequest(){
         var invalidCardholderName = RandomStringUtils.randomAlphabetic(22);
-        var addCardRequest = new AddCardRequest(invalidCardholderName, accountHolderIban);
+        var addCardRequest = new AddCardRequest(bankAccountId, invalidCardholderName);
 
         given()
             .spec(requestSpecification)
-            .body(addCardRequest)
+                .body(addCardRequest)
         .when()
             .post()
         .then()
@@ -130,23 +165,5 @@ public class AddCardControllerTest implements LocalStackMySQLTestContainer {
                 .body("errors", hasSize(1))
                 .body("errors[0].message", equalTo(exceptionMessageSource.
                         getMessage("card.cardholderName.length.limit", Locale.getDefault()).orElseThrow()));
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(InvalidStringArgumentProvider.class)
-    public void givenInvalidIBAN_whenAddCard_thenReturnBadRequest(String invalidAccountHolderIBAN){
-        var addCardRequest = new AddCardRequest(cardholderName, invalidAccountHolderIBAN);
-
-        given()
-            .spec(requestSpecification)
-            .body(addCardRequest)
-        .when()
-            .post()
-        .then()
-            .statusCode(HttpStatus.BAD_REQUEST.getCode())
-            .rootPath("_embedded")
-                .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(exceptionMessageSource.
-                        getMessage("card.accountHolderIBAN.notBlank", Locale.getDefault()).orElseThrow()));
     }
 }

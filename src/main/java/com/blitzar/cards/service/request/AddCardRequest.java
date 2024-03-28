@@ -1,36 +1,39 @@
 package com.blitzar.cards.service.request;
 
 import com.blitzar.cards.domain.CardStatus;
+import com.blitzar.cards.validation.annotation.BankAccountId;
 import com.blitzar.cards.validation.annotation.CardholderName;
 import io.micronaut.core.annotation.Introspected;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 @Introspected
 public class AddCardRequest {
 
-    public static final CardStatus DEFAULT_CARD_STATUS = CardStatus.BLOCKED;
+    public static final CardStatus DEFAULT_CARD_STATUS = CardStatus.LOCKED;
     public static final int DEFAULT_DAILY_WITHDRAWAL_LIMIT = 1000;
     public static final int DEFAULT_DAILY_PAYMENT_LIMIT = 2500;
     public static final int DEFAULT_YEAR_PERIOD_EXPIRATION_DATE = 5;
 
+    @BankAccountId
+    private Long bankAccountId;
+
     @CardholderName
     private String cardholderName;
 
-    @NotBlank(message = "card.accountHolderIBAN.notBlank")
-    private String iban;
-
-    public AddCardRequest(String cardholderName, String iban) {
+    public AddCardRequest(Long bankAccountId, String cardholderName) {
+        this.bankAccountId = bankAccountId;
         this.cardholderName = cardholderName;
-        this.iban = iban;
     }
 
-    public String getIban() {
-        return iban;
+    public Long getBankAccountId() {
+        return bankAccountId;
     }
 
-    public void setIban(String iban) {
-        this.iban = iban;
+    public void setBankAccountId(Long bankAccountId) {
+        this.bankAccountId = bankAccountId;
     }
 
     public String getCardholderName() {

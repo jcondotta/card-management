@@ -3,8 +3,8 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.blitzar</groupId>
-	<artifactId>cards</artifactId>
-	<name>cards</name>
+	<artifactId>card-management</artifactId>
+	<name>card-management</name>
 	<version>0.1</version>
 	<packaging>${packaging}</packaging>
 
@@ -103,7 +103,7 @@
 					</annotationProcessorPaths>
 					<compilerArgs>
 						<arg>-Amicronaut.processing.group=com.blitzar.cards</arg>
-						<arg>-Amicronaut.processing.module=cards</arg>
+						<arg>-Amicronaut.processing.module=card-management</arg>
 					</compilerArgs>
 				</configuration>
 			</plugin>
@@ -319,7 +319,6 @@
 			<version>4.2.0</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 </project>

@@ -12,26 +12,26 @@ import javax.transaction.Transactional;
 
 @Singleton
 @Transactional
-public class ActivateCardService {
+public class LockCardService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActivateCardService.class);
+    private static final Logger logger = LoggerFactory.getLogger(LockCardService.class);
 
     private final CardRepository repository;
 
     @Inject
-    public ActivateCardService(CardRepository repository) {
+    public LockCardService(CardRepository repository) {
         this.repository = repository;
     }
 
-    public void activateCard(Long cardId){
-        logger.info("[CardId={}] Activating card", cardId);
+    public void lockCard(Long cardId){
+        logger.info("[CardId={}] Locking card", cardId);
 
         repository.findById(cardId)
                 .map(card -> {
-                    card.setCardStatus(CardStatus.ACTIVE);
+                    card.setCardStatus(CardStatus.LOCKED);
                     repository.save(card);
 
-                    logger.info("[CardId={}] Card activated", cardId);
+                    logger.info("[CardId={}] Card locked", cardId);
                     return card;
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("card.notFound", cardId));

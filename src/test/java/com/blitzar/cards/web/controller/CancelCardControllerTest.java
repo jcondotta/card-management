@@ -46,8 +46,8 @@ class CancelCardControllerTest implements LocalStackMySQLTestContainer {
 
     private RequestSpecification requestSpecification;
 
+    private Long bankAccountId = 998372L;
     private String cardholderName = "Jefferson Condotta";
-    private String accountHolderIban = UUID.randomUUID().toString();
 
     @BeforeAll
     public static void beforeAll(){
@@ -58,18 +58,20 @@ class CancelCardControllerTest implements LocalStackMySQLTestContainer {
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(CardAPIConstants.BASE_PATH_API_V1_MAPPING);
+                .basePath(CardAPIConstants.CARD_V1_MAPPING);
     }
 
     @Test
     public void givenExistentCardId_whenCancelCard_thenReturnOk(){
-        var addCardRequest = new AddCardRequest(cardholderName, accountHolderIban);
+        var addCardRequest = new AddCardRequest(bankAccountId, cardholderName);
+
         Card card = addCardService.addCard(addCardRequest);
+        assertThat(card.getCardStatus()).isEqualTo(CardStatus.LOCKED);
 
         given()
             .spec(requestSpecification)
         .when()
-            .patch("/{id}/cancellation", card.getCardId())
+            .patch("/cancellation", card.getCardId())
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
@@ -83,7 +85,7 @@ class CancelCardControllerTest implements LocalStackMySQLTestContainer {
         given()
             .spec(requestSpecification)
         .when()
-            .patch("/{id}/cancellation", NumberUtils.INTEGER_MINUS_ONE)
+            .patch("/cancellation", NumberUtils.LONG_MINUS_ONE)
         .then()
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")

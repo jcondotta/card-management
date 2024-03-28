@@ -20,36 +20,34 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ActivateCardServiceTest {
+class LockCardServiceTest {
 
-    private ActivateCardService activateCardService;
-
-    private Long cardId = 22732L;
+    private LockCardService lockCardService;
 
     @Mock
     private CardRepository cardRepositoryMock;
 
     @BeforeEach
     public void beforeEach(){
-        activateCardService = new ActivateCardService(cardRepositoryMock);
+        lockCardService = new LockCardService(cardRepositoryMock);
     }
 
     @Test
-    public void givenExistentCardId_whenActivateCard_thenUpdateCardStatus(){
+    public void givenExistentCardId_whenLockCard_thenUpdateCardStatus(){
         Card cardMock = mock(Card.class);
+
         when(cardRepositoryMock.findById(anyLong())).thenReturn(Optional.of(cardMock));
 
-        activateCardService.activateCard(cardId);
-
+        lockCardService.lockCard(anyLong());
         verify(cardRepositoryMock).save(any());
     }
 
     @Test
-    public void givenNonExistentCardId_whenActivateCard_thenReturnNotFound(){
+    public void givenNonExistentCardId_whenLockCard_thenReturnNotFound(){
         long nonExistentCardId = NumberUtils.INTEGER_MINUS_ONE.longValue();
-        when(cardRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
+        when(cardRepositoryMock.findById(nonExistentCardId)).thenReturn(Optional.empty());
 
-        var exception = assertThrowsExactly(ResourceNotFoundException.class, () -> activateCardService.activateCard(nonExistentCardId));
+        var exception = assertThrowsExactly(ResourceNotFoundException.class, () -> lockCardService.lockCard(nonExistentCardId));
 
         assertAll(
                 () -> assertThat(exception.getMessage()).isEqualTo("card.notFound"),

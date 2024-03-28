@@ -47,8 +47,8 @@ class ActivateCardControllerTest implements LocalStackMySQLTestContainer {
     @Inject
     private CardRepository cardRepository;
 
+    private Long bankAccountId = 998372L;
     private String cardholderName = "Jefferson Condotta";
-    private String accountHolderIban = UUID.randomUUID().toString();
 
     @BeforeAll
     public static void beforeAll(){
@@ -59,18 +59,20 @@ class ActivateCardControllerTest implements LocalStackMySQLTestContainer {
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(CardAPIConstants.BASE_PATH_API_V1_MAPPING);
+                .basePath(CardAPIConstants.CARD_V1_MAPPING);
     }
 
     @Test
     public void givenExistentCardId_whenActivateCard_thenReturnOk(){
-        var addCardRequest = new AddCardRequest(cardholderName, accountHolderIban);
+        var addCardRequest = new AddCardRequest(bankAccountId, cardholderName);
+
         Card card = addCardService.addCard(addCardRequest);
+        assertThat(card.getCardStatus()).isEqualTo(CardStatus.LOCKED);
 
         given()
             .spec(requestSpecification)
         .when()
-            .patch("/{id}/activation", card.getCardId())
+            .patch("/activation", card.getCardId())
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
@@ -84,7 +86,7 @@ class ActivateCardControllerTest implements LocalStackMySQLTestContainer {
         given()
             .spec(requestSpecification)
         .when()
-            .patch("/{id}/activation", NumberUtils.INTEGER_MINUS_ONE)
+            .patch("/activation", NumberUtils.INTEGER_MINUS_ONE)
         .then()
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")

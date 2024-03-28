@@ -11,14 +11,14 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cardId;
 
+    @Column(name = "bank_account_id", nullable = false)
+    private Long bankAccountId;
+
     @Column(name = "cardholder_name", nullable = false, length = 21)
     private String cardholderName;
 
     @Column(name = "card_number", nullable = false)
     private String cardNumber;
-
-    @Column(name = "account_holder_iban", nullable = false)
-    private String accountHolderIban;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "card_status", nullable = false)
@@ -41,6 +41,14 @@ public class Card {
         this.cardId = cardId;
     }
 
+    public Long getBankAccountId() {
+        return bankAccountId;
+    }
+
+    public void setBankAccountId(Long bankAccountId) {
+        this.bankAccountId = bankAccountId;
+    }
+
     public String getCardholderName() {
         return cardholderName;
     }
@@ -55,14 +63,6 @@ public class Card {
 
     public void setCardStatus(CardStatus cardStatus) {
         this.cardStatus = cardStatus;
-    }
-
-    public String getAccountHolderIban() {
-        return accountHolderIban;
-    }
-
-    public void setAccountHolderIban(String accountHolderIban) {
-        this.accountHolderIban = accountHolderIban;
     }
 
     public String getCardNumber() {

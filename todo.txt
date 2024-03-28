@@ -1,3 +1,4 @@
+1 - Guardar o nome do cliente pq provavel que ira ter match com nome do cartao em caso de busca
 3 - Criar validacao para todos os campos
 6 - Logging
 8 - Lock Card - Patch
@@ -8,3 +9,4 @@
 14 - retorno para status 202
 15 - Evitar pull the image a cada push to main branch
 16 - evitar que o contexto seja reiniciado a cada classe
+17 - acho que nao preciso de ${AWS_SQS_ENDPOINT}

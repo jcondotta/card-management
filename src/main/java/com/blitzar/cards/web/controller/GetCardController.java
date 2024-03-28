@@ -1,7 +1,7 @@
 package com.blitzar.cards.web.controller;
 
 import com.blitzar.cards.service.GetCardService;
-import com.blitzar.cards.web.dto.CardDTO;
+import com.blitzar.cards.service.dto.CardDTO;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -11,7 +11,7 @@ import io.micronaut.validation.Validated;
 import jakarta.inject.Inject;
 
 @Validated
-@Controller(CardAPIConstants.BASE_PATH_API_V1_MAPPING)
+@Controller(CardAPIConstants.CARD_V1_MAPPING)
 public class GetCardController {
 
     private final GetCardService getCardService;
@@ -21,9 +21,9 @@ public class GetCardController {
         this.getCardService = getCardService;
     }
 
-    @Get(value = "/{id}", produces = MediaType.APPLICATION_JSON)
-    public HttpResponse<?> byId(@PathVariable("id") Long id){
-        CardDTO cardDTO = getCardService.byId(id);
+    @Get(produces = MediaType.APPLICATION_JSON)
+    public HttpResponse<?> findById(@PathVariable("card-id") Long cardId){
+        CardDTO cardDTO = getCardService.findById(cardId);
         return HttpResponse.ok().body(cardDTO);
     }
 }

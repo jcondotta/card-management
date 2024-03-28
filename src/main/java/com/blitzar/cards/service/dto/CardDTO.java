@@ -1,35 +1,39 @@
-package com.blitzar.cards.web.dto;
+package com.blitzar.cards.service.dto;
 
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.domain.CardStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CardDTO {
 
     private Long cardId;
+    private Long bankAccountId;
     private String cardholderName;
     private String cardNumber;
-    private String accountHolderIban;
     private CardStatus cardStatus;
     private int dailyWithdrawalLimit;
     private int dailyPaymentLimit;
+
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private LocalDate expirationDate;
 
     public CardDTO() {}
 
     public CardDTO(Long cardId,
+                   Long bankAccountId,
                    String cardholderName,
                    String cardNumber,
-                   String accountHolderIban,
                    CardStatus cardStatus,
                    int dailyWithdrawalLimit,
                    int dailyPaymentLimit,
                    LocalDate expirationDate) {
         this.cardId = cardId;
+        this.bankAccountId = bankAccountId;
         this.cardholderName = cardholderName;
         this.cardNumber = cardNumber;
-        this.accountHolderIban = accountHolderIban;
         this.cardStatus = cardStatus;
         this.dailyWithdrawalLimit = dailyWithdrawalLimit;
         this.dailyPaymentLimit = dailyPaymentLimit;
@@ -38,9 +42,9 @@ public class CardDTO {
 
     public CardDTO(Card card) {
         this(card.getCardId(),
+                card.getBankAccountId(),
                 card.getCardholderName(),
                 card.getCardNumber(),
-                card.getAccountHolderIban(),
                 card.getCardStatus(),
                 card.getDailyWithdrawalLimit(),
                 card.getDailyPaymentLimit(),
@@ -55,12 +59,12 @@ public class CardDTO {
         return cardholderName;
     }
 
-    public String getCardNumber() {
-        return cardNumber;
+    public Long getBankAccountId() {
+        return bankAccountId;
     }
 
-    public String getAccountHolderIban() {
-        return accountHolderIban;
+    public String getCardNumber() {
+        return cardNumber;
     }
 
     public CardStatus getCardStatus() {

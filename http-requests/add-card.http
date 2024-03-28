@@ -1,8 +1,0 @@
-// @no-log
-POST {{host}}/api/v1/cards
-Content-Type: application/json
-
-{
-  "iban": "747467476",
-  "cardholderName": "Jefferson William"
-}

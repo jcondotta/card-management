@@ -10,7 +10,7 @@ import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@JMSListener(SqsConfiguration.CONNECTION_FACTORY_BEAN_NAME)
+//@JMSListener(SqsConfiguration.CONNECTION_FACTORY_BEAN_NAME)
 public class CardApplicationEventConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(CardApplicationEventConsumer.class);
@@ -22,10 +22,10 @@ public class CardApplicationEventConsumer {
         this.addCardService = addCardService;
     }
 
-    @Queue(value = "card-application", concurrency = "1-3")
+    @Queue(value = "${app.aws.sqs.card-application-queue-name}", concurrency = "1-3")
     public void consumeMessage(@MessageBody CardApplicationEvent cardApplicationEvent) {
-        logger.info("Received a card Application event with cardholderName: {}", cardApplicationEvent.getCardholderName());
+        logger.info("Received a card application event with cardholderName: {}", cardApplicationEvent.getCardholderName());
 
-        addCardService.addCard(cardApplicationEvent);
+//        addCardService.addCard(cardApplicationEvent);
     }
 }

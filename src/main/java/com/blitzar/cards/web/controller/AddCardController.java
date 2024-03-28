@@ -7,6 +7,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.validation.Validated;
 import jakarta.inject.Inject;
@@ -23,8 +24,8 @@ public class AddCardController {
     }
 
     @Post(consumes = MediaType.APPLICATION_JSON)
-    public HttpResponse<?> addCard(@Body AddCardRequest request){
-        Card card = addCardService.addCard(request);
+    public HttpResponse<?> addCard(@Body AddCardRequest addCardRequest){
+        Card card = addCardService.addCard(addCardRequest);
 
         return HttpResponse.created(card.getCardId());
     }

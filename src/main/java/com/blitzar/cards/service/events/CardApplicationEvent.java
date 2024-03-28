@@ -6,8 +6,8 @@ import io.micronaut.core.annotation.Introspected;
 @Introspected
 public class CardApplicationEvent extends AddCardRequest {
 
-    public CardApplicationEvent(String cardholderName, String iban) {
-        super(cardholderName, iban);
+    public CardApplicationEvent(Long bankAccountId, String cardholderName) {
+        super(bankAccountId, cardholderName);
     }
 }
 

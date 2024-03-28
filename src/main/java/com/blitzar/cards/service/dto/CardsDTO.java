@@ -1,4 +1,4 @@
-package com.blitzar.cards.web.dto;
+package com.blitzar.cards.service.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
