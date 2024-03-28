@@ -9,7 +9,7 @@ import io.micronaut.validation.Validated;
 import jakarta.inject.Inject;
 
 @Validated
-@Controller(CardAPIConstants.BASE_PATH_API_V1_MAPPING)
+@Controller(CardAPIConstants.CARD_V1_MAPPING)
 public class ActivateCardController {
 
     private final ActivateCardService activateCardService;
@@ -19,9 +19,9 @@ public class ActivateCardController {
         this.activateCardService = activateCardService;
     }
 
-    @Patch(value = "/{id}/activation")
-    public HttpResponse<?> activateCard(@PathVariable("id") Long id){
-        activateCardService.activateCard(id);
+    @Patch(value = "/activation")
+    public HttpResponse<?> activateCard(@PathVariable("card-id") Long cardId){
+        activateCardService.activateCard(cardId);
         return HttpResponse.noContent();
     }
 }
