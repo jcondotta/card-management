@@ -3,13 +3,9 @@ package com.blitzar.cards.service.request;
 import com.blitzar.cards.domain.CardStatus;
 import com.blitzar.cards.validation.annotation.BankAccountId;
 import com.blitzar.cards.validation.annotation.CardholderName;
-import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-
-@Introspected
+@Serdeable
 public class AddCardRequest {
 
     public static final CardStatus DEFAULT_CARD_STATUS = CardStatus.LOCKED;

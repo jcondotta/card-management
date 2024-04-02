@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class AddCardControllerTest implements LocalStackMySQLTestContainer {
+public class AddCardControllerIT implements LocalStackMySQLTestContainer {
 
     @Inject
     private CardRepository cardRepository;

@@ -3,9 +3,9 @@ package com.blitzar.cards.web.controller;
 import com.blitzar.cards.LocalStackMySQLTestContainer;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.domain.CardStatus;
-import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.service.AddCardService;
 import com.blitzar.cards.service.request.AddCardRequest;
+import com.blitzar.cards.service.dto.CardDTO;
 import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -15,37 +15,29 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import java.util.Locale;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-class ActivateCardControllerTest implements LocalStackMySQLTestContainer {
+public class GetCardControllerIT implements LocalStackMySQLTestContainer {
 
     @Inject
     @Named("exceptionMessageSource")
     private MessageSource exceptionMessageSource;
 
-    private RequestSpecification requestSpecification;
-
     @Inject
     private AddCardService addCardService;
 
-    @Inject
-    private CardRepository cardRepository;
+    private RequestSpecification requestSpecification;
 
     private Long bankAccountId = 998372L;
     private String cardholderName = "Jefferson Condotta";
@@ -63,34 +55,45 @@ class ActivateCardControllerTest implements LocalStackMySQLTestContainer {
     }
 
     @Test
-    public void givenExistentCardId_whenActivateCard_thenReturnOk(){
+    public void givenExistentCardId_whenGetCard_thenReturnOk(){
         var addCardRequest = new AddCardRequest(bankAccountId, cardholderName);
 
         Card card = addCardService.addCard(addCardRequest);
         assertThat(card.getCardStatus()).isEqualTo(CardStatus.LOCKED);
 
-        given()
+        CardDTO cardDTO = given()
             .spec(requestSpecification)
         .when()
-            .patch("/activation", card.getCardId())
+            .get("/", card.getCardId())
         .then()
-            .statusCode(HttpStatus.NO_CONTENT.getCode());
+            .statusCode(HttpStatus.OK.getCode())
+                .extract()
+                    .as(CardDTO.class);
 
-        cardRepository.findById(card.getCardId())
-                .ifPresentOrElse(patchedCard -> assertThat(patchedCard.getCardStatus()).isEqualTo(CardStatus.ACTIVE),
-                        () -> fail(exceptionMessageSource.getMessage("card.notFound", Locale.getDefault()).orElseThrow()));
+        assertAll(
+                () -> assertThat(cardDTO.getCardId()).isEqualTo(card.getCardId()),
+                () -> assertThat(cardDTO.getBankAccountId()).isEqualTo(card.getBankAccountId()),
+                () -> assertThat(cardDTO.getCardholderName()).isEqualTo(card.getCardholderName()),
+                () -> assertThat(cardDTO.getCardNumber()).isEqualTo(card.getCardNumber()),
+                () -> assertThat(cardDTO.getCardStatus()).isEqualTo(card.getCardStatus()),
+                () -> assertThat(cardDTO.getDailyWithdrawalLimit()).isEqualTo(card.getDailyWithdrawalLimit()),
+                () -> assertThat(cardDTO.getDailyPaymentLimit()).isEqualTo(card.getDailyPaymentLimit()),
+                () -> assertThat(cardDTO.getExpirationDate()).isEqualTo(card.getExpirationDate())
+        );
     }
 
     @Test
-    public void givenNonExistentCardId_whenActivateCard_thenReturnNotFound(){
+    public void givenNonExistentCardId_whenGetCard_thenReturnNotFound(){
+        var nonExistentCardId = NumberUtils.INTEGER_MINUS_ONE;
+
         given()
             .spec(requestSpecification)
         .when()
-            .patch("/activation", NumberUtils.INTEGER_MINUS_ONE)
+            .get("/", nonExistentCardId)
         .then()
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("card.notFound", Locale.getDefault()).orElseThrow()));
+                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("card.notFound", Locale.getDefault(), nonExistentCardId).orElseThrow()));
     }
 }

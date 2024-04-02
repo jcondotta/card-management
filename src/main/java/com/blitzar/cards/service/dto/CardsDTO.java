@@ -1,22 +1,17 @@
 package com.blitzar.cards.service.dto;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
-public class CardsDTO implements Serializable {
+@Serdeable
+public record CardsDTO(Collection<CardDTO> cards) {
 
-    private final Collection<CardDTO> cards;
-
-    public CardsDTO() {
-        this.cards = new ArrayList<>();
-    }
-
-    public void addCard(CardDTO cardDTO){
-        getCards().add(cardDTO);
-    }
-
-    public Collection<CardDTO> getCards() {
-        return cards;
+    @Override
+    public Collection<CardDTO> cards() {
+        return Objects.nonNull(cards) ? cards : new ArrayList<>();
     }
 }

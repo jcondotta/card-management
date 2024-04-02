@@ -1,8 +1,12 @@
 package com.blitzar.cards.service;
 
+import com.blitzar.cards.TestValidatorBuilder;
 import com.blitzar.cards.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.cards.repository.CardRepository;
 import com.blitzar.cards.service.request.AddCardRequest;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +17,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
 import java.time.Clock;
 import java.time.ZoneOffset;
 
@@ -36,9 +38,11 @@ class AddCardServiceTest {
     private Long bankAccountId = 998372L;
     private String cardholderName = "Jefferson Condotta";
 
+    private static final Validator VALIDATOR = TestValidatorBuilder.getValidator();
+
     @BeforeEach
     public void beforeEach(){
-        addCardService = new AddCardService(cardRepositoryMock, Clock.system(ZoneOffset.UTC), Validation.buildDefaultValidatorFactory().getValidator());
+        addCardService = new AddCardService(cardRepositoryMock, Clock.system(ZoneOffset.UTC), VALIDATOR);
     }
 
     @Test

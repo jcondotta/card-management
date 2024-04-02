@@ -6,12 +6,15 @@ import com.blitzar.cards.service.dto.CardDTO;
 import com.blitzar.cards.service.dto.CardsDTO;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Singleton
+@Transactional
 public class GetCardService {
 
     private static final Logger logger = LoggerFactory.getLogger(GetCardService.class);
@@ -34,12 +37,11 @@ public class GetCardService {
     public CardsDTO findByBankAccountId(Long bankAccountId){
         logger.info("[BankAccountId={}] Fetching cards", bankAccountId);
 
-        CardsDTO cardsDTO = new CardsDTO();
-        StreamSupport.stream(cardRepository.findByBankAccountId(bankAccountId).spliterator(), false)
+        var cards = StreamSupport.stream(cardRepository.findByBankAccountId(bankAccountId).spliterator(), false)
                 .map(card -> new CardDTO(card))
-                .forEachOrdered(cardsDTO.getCards()::add);
+                .collect(Collectors.toList());
 
-        logger.info("[BankAccountId={}] {} card(s) found", bankAccountId, cardsDTO.getCards().size());
-        return cardsDTO;
+        logger.info("[BankAccountId={}] {} card(s) found", bankAccountId, cards.size());
+        return new CardsDTO(cards);
     }
 }

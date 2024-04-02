@@ -22,29 +22,28 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import java.util.Locale;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.hasSize;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-class CancelCardControllerTest implements LocalStackMySQLTestContainer {
+class ActivateCardControllerIT implements LocalStackMySQLTestContainer {
 
     @Inject
     @Named("exceptionMessageSource")
     private MessageSource exceptionMessageSource;
+
+    private RequestSpecification requestSpecification;
 
     @Inject
     private AddCardService addCardService;
 
     @Inject
     private CardRepository cardRepository;
-
-    private RequestSpecification requestSpecification;
 
     private Long bankAccountId = 998372L;
     private String cardholderName = "Jefferson Condotta";
@@ -62,7 +61,7 @@ class CancelCardControllerTest implements LocalStackMySQLTestContainer {
     }
 
     @Test
-    public void givenExistentCardId_whenCancelCard_thenReturnOk(){
+    public void givenExistentCardId_whenActivateCard_thenReturnOk(){
         var addCardRequest = new AddCardRequest(bankAccountId, cardholderName);
 
         Card card = addCardService.addCard(addCardRequest);
@@ -71,25 +70,27 @@ class CancelCardControllerTest implements LocalStackMySQLTestContainer {
         given()
             .spec(requestSpecification)
         .when()
-            .patch("/cancellation", card.getCardId())
+            .patch("/activation", card.getCardId())
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
         cardRepository.findById(card.getCardId())
-                .ifPresentOrElse(patchedCard -> assertThat(patchedCard.getCardStatus()).isEqualTo(CardStatus.CANCELLED),
+                .ifPresentOrElse(patchedCard -> assertThat(patchedCard.getCardStatus()).isEqualTo(CardStatus.ACTIVE),
                         () -> fail(exceptionMessageSource.getMessage("card.notFound", Locale.getDefault()).orElseThrow()));
     }
 
     @Test
-    public void givenNonExistentCardId_whenCancelCard_thenReturnNotFound(){
+    public void givenNonExistentCardId_whenActivateCard_thenReturnNotFound(){
+        var nonExistentCardId = NumberUtils.INTEGER_MINUS_ONE;
+
         given()
             .spec(requestSpecification)
         .when()
-            .patch("/cancellation", NumberUtils.LONG_MINUS_ONE)
+            .patch("/activation", nonExistentCardId)
         .then()
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("card.notFound", Locale.getDefault()).orElseThrow()));
+                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("card.notFound", Locale.getDefault(), nonExistentCardId).orElseThrow()));
     }
 }

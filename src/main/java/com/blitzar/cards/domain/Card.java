@@ -1,6 +1,7 @@
 package com.blitzar.cards.domain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 @Entity

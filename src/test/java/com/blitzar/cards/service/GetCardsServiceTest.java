@@ -1,10 +1,7 @@
 package com.blitzar.cards.service;
 
 import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.exception.ResourceNotFoundException;
 import com.blitzar.cards.repository.CardRepository;
-import com.blitzar.cards.service.dto.CardDTO;
-import com.blitzar.cards.service.dto.CardsDTO;
 import com.blitzar.cards.service.request.AddCardRequest;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,12 +13,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -58,9 +53,9 @@ class GetCardsServiceTest {
                 .thenReturn(Collections.singletonList(card));
 
         var cardsDTO = getCardService.findByBankAccountId(bankAccountId);
-        assertThat(cardsDTO.getCards().size()).isEqualTo(1);
+        assertThat(cardsDTO.cards().size()).isEqualTo(1);
 
-        cardsDTO.getCards().stream()
+        cardsDTO.cards().stream()
                 .findFirst()
                 .ifPresent(cardDTO -> assertAll(
                         () -> assertThat(cardDTO.getCardId()).isEqualTo(card.getCardId()),
@@ -81,6 +76,6 @@ class GetCardsServiceTest {
                 .thenReturn(Collections.EMPTY_LIST);
 
         var cardsDTO = getCardService.findByBankAccountId(nonExistentBankAccountId);
-        assertThat(cardsDTO.getCards().size()).isEqualTo(0);
+        assertThat(cardsDTO.cards().size()).isEqualTo(0);
     }
 }

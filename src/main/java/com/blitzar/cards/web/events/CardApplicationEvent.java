@@ -1,9 +1,10 @@
-package com.blitzar.cards.service.events;
+package com.blitzar.cards.web.events;
 
 import com.blitzar.cards.service.request.AddCardRequest;
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
 
-@Introspected
+@Serdeable
 public class CardApplicationEvent extends AddCardRequest {
 
     public CardApplicationEvent(Long bankAccountId, String cardholderName) {

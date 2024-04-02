@@ -3,10 +3,12 @@ package com.blitzar.cards.service.dto;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.domain.CardStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.micronaut.serde.annotation.Serdeable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Serdeable
 public class CardDTO {
 
     private Long cardId;
